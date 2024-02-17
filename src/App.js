@@ -36,7 +36,7 @@ const Tile = ({id, color, children}) => {
   );
 }
 
-const Slot = ({index, word, changeLetter}) => {
+const Slot = ({colour, index, word, changeLetter}) => {
   const [{isOver }, drop] = useDrop(
     () => ({
       accept: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
@@ -53,11 +53,11 @@ const Slot = ({index, word, changeLetter}) => {
       width: '100%', 
       fontSize: '100px',
       textAlign: 'center',
-      background: isOver ? 'green' : 'grey',
+      background: isOver ? 'blue' : colour,
       borderStyle: 'solid',
       fontFamily: 'Oxygen',
       borderColor: 'black',
-      color: 'white',
+      color: 'black',
       borderRadius: '5px'
     }}>
       {word[index]} 
@@ -93,28 +93,153 @@ const CreateRow = (numOfTiles, rowNumber) => {
 }
 
 const App = () => {
-  return <Game />;
+  const createToken = () => {
+    let token = "";
+    let number = Math.floor(Math.random() * 10000000000);
+    return token + number;
+  }
+  return <Game createToken={createToken} />;
 }
 
-const Game = () => {
+const Game = ({createToken}) => {
   const [word, setWord] = useState(Array(5).fill('_'));
-  const [tries, setTries] = useState(5);
+  const [tries, setTries] = useState(6);
+  const [colours, setColours] = useState(Array(5).fill('grey'));
+  const [sessionToken, setSessionToken] = useState(createToken());
 
   const setLetter = (index, letter, word) => {
     const newWord = word.slice();
     newWord[index] = letter;
     setWord(newWord);
+  };
+
+  const guessToJson = () => {
+    return {
+      Chars: word,
+      Token: sessionToken
+    }
   }
 
-  const handleGuess = () => {
-    if (tries != 0) {
-      setTries((prev) => prev - 1);
+  const wordToJson = () => {
+    return {
+      Chars: word
     }
+  };
+
+  const tokenToJson = () => {
+    return {
+      Token: sessionToken
+    }
+  }
+
+  const handleStartUp = async () => {
+    let getAPI = '/api/SetSession';
+    if (process.env.NODE_ENV !== 'production') {
+      getAPI = 'http://localhost:7022' + getAPI;
+    }
+    await fetch(getAPI, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(tokenToJson())
+    })
+  }
+
+  const validateGuess = async () => {
+    let getAPI = '/api/ValidateGuess';
+    if (process.env.NODE_ENV !== 'production') {
+      getAPI = 'http://localhost:7022' + getAPI;
+    }
+    const response = await fetch(getAPI, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(guessToJson())
+    })
+    const parsedResponse = await response.json();
+    return parsedResponse.valid;
+
+  }
+
+  const handleGuess = async () => {
+
+    const validGuess = await validateGuess();
+    if(!validGuess)
+    {
+      alert("Not a valid word");
+      return;
+    }
+
+    
+    if (tries == 6) {
+      await handleStartUp();
+    };
+    setTries((prev) => prev - 1);
+    
+
+    let getAPI = '/api/CheckGuess';
+    if (process.env.NODE_ENV !== 'production') {
+      getAPI = 'http://localhost:7022' + getAPI;
+    }
+    const response = await fetch(getAPI, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(guessToJson())
+    })
+    const parsedResponse = await response.json();
+    setColours(parsedResponse.colours);
+
   }
 
   const resetGame = () => {
     setWord(Array(5).fill('_'));
-    setTries(5);
+    setTries(6);
+    setColours(Array(5).fill('grey'));
+    setSessionToken(createToken());
+  }
+
+  const getAnswer = async (resultHandler) => {
+    let getAPI = '/api/GetAnswer';
+    if (process.env.NODE_ENV !== 'production') {
+      getAPI = 'http://localhost:7022' + getAPI;
+    }
+    const response = await fetch(getAPI, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(guessToJson())
+    })
+    const parsedResponse = await response.json();
+    resultHandler(parsedResponse.word);
+  }
+
+  const DisplayWord = ({tries}) => {
+    const [answer, setAnswer] = useState("");
+    if (tries == 0)
+    {
+      getAnswer(setAnswer);
+      return ( 
+        <div style={{
+          width: '100%',
+          fontSize: '60px'
+        }}>
+          The word was {answer}
+        </div>
+      );
+    }
+    else
+    {
+      return null;
+    }
   }
   
   return (
@@ -164,11 +289,11 @@ const Game = () => {
           width: '100%', 
           display: 'flex'
         }}>
-          <Slot index={0} word={word} changeLetter={setLetter}></Slot>
-          <Slot index={1} word={word} changeLetter={setLetter}></Slot>
-          <Slot index={2} word={word} changeLetter={setLetter}></Slot>
-          <Slot index={3} word={word} changeLetter={setLetter}></Slot>
-          <Slot index={4} word={word} changeLetter={setLetter}></Slot>
+          <Slot colour={colours[0]} index={0} word={word} changeLetter={setLetter}></Slot>
+          <Slot colour={colours[1]} index={1} word={word} changeLetter={setLetter}></Slot>
+          <Slot colour={colours[2]} index={2} word={word} changeLetter={setLetter}></Slot>
+          <Slot colour={colours[3]} index={3} word={word} changeLetter={setLetter}></Slot>
+          <Slot colour={colours[4]} index={4} word={word} changeLetter={setLetter}></Slot>
         </div>
         <div style={{
           height: '25%', 
@@ -190,6 +315,7 @@ const Game = () => {
             </Button>}
           </Box>
         </div>
+        <DisplayWord tries={tries} />
       </div>
     </DndProvider>
   );  
