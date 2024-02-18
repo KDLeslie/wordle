@@ -2,11 +2,13 @@ import logo from './logo.svg';
 import './App.css';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider, useDrop, useDrag } from 'react-dnd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
-import { Box } from '@mui/material';
+import { Dialog, DialogContent, DialogTitle } from '@mui/material';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContentText from '@mui/material/DialogContentText';
 
-const Tile = ({id, color, children}) => {
+const Tile = ({ id, color, children }) => {
   const [{ isDragging, canDrag }, dragRef] = useDrag(
     () => ({
       item: {type: id},
@@ -36,8 +38,8 @@ const Tile = ({id, color, children}) => {
   );
 }
 
-const Slot = ({colour, index, word, changeLetter}) => {
-  const [{isOver }, drop] = useDrop(
+const Slot = ({ colour, index, word, changeLetter }) => {
+  const [{ isOver }, drop] = useDrop(
     () => ({
       accept: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
       drop: (item) => changeLetter(index, item.type, word),
@@ -65,9 +67,67 @@ const Slot = ({colour, index, word, changeLetter}) => {
   );
 }
 
-const CreateTiles = () => {
-  let row1 = CreateRow(13, 0);
-  let row2 = CreateRow(13, 1);
+const StartGameDialog = ({ open, handleClose }) => {
+  const close = () => {
+    handleClose();
+  }
+  return (
+    <Dialog
+      open={open}
+      onClose={close}
+      onClick={null}
+    >
+      <DialogTitle id="alert-dialog-title">
+        {"Welcome to Wordle!"}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          You have 6 chances to guess a 5 letter word.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={close}>Play</Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
+
+const EndGameDialog = ({ open, won, handleClose, getAnswer }) => {
+  const [answer, setAnswer] = useState("");
+  const close = () => {
+    setAnswer("");
+    handleClose();
+  }
+  useEffect(() => {
+    if (open ==  true) {
+      getAnswer(setAnswer);
+    }
+  }, [open]
+  )
+  return (
+    <Dialog
+      open={open}
+      onClose={close}
+      onClick={null}
+    >
+      <DialogTitle id="alert-dialog-title">
+        {won ? "Congrats!" : "Game Over!"}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          The word was {answer}.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={close}>Play Again</Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
+
+const createTiles = () => {
+  let row1 = createRow(13, 0);
+  let row2 = createRow(13, 1);
   return(
     <>
       {row1}
@@ -76,7 +136,7 @@ const CreateTiles = () => {
   )
 }
 
-const CreateRow = (numOfTiles, rowNumber) => {
+const createRow = (numOfTiles, rowNumber) => {
   let tiles = [];
   for (let i = 0; i < numOfTiles; i++) {
     var letter = String.fromCharCode(97 + i + rowNumber * numOfTiles);
@@ -93,19 +153,42 @@ const CreateRow = (numOfTiles, rowNumber) => {
 }
 
 const App = () => {
+  const [token, setToken] = useState("");
+
+  useEffect(() => {
+    createToken();
+  }, [])
+  
   const createToken = () => {
     let token = "";
     let number = Math.floor(Math.random() * 10000000000);
-    return token + number;
-  }
-  return <Game createToken={createToken} />;
+    setToken(token + number);
+  };
+
+  return (
+    <>
+      <Game sessionToken={token} createToken={createToken} />
+    </>
+  );
 }
 
-const Game = ({createToken}) => {
+const Game = ({ sessionToken, createToken }) => {
+  const [startUp, setStartUp] = useState(true);
+  const [gameEnd, setGameEnd] = useState(false);
   const [word, setWord] = useState(Array(5).fill('_'));
   const [tries, setTries] = useState(6);
   const [colours, setColours] = useState(Array(5).fill('grey'));
-  const [sessionToken, setSessionToken] = useState(createToken());
+  const [resettingGame, setResettingGame] = useState(false);
+  const [won, setWon] = useState(false);
+
+  useEffect(() => {
+    if(resettingGame ==  true)
+    {
+      setSession();
+      setResettingGame(false);
+    }
+    
+  }, [resettingGame])
 
   const setLetter = (index, letter, word) => {
     const newWord = word.slice();
@@ -118,7 +201,7 @@ const Game = ({createToken}) => {
       Chars: word,
       Token: sessionToken
     }
-  }
+  };
 
   const wordToJson = () => {
     return {
@@ -130,9 +213,9 @@ const Game = ({createToken}) => {
     return {
       Token: sessionToken
     }
-  }
+  };
 
-  const handleStartUp = async () => {
+  const setSession = async () => {
     let getAPI = '/api/SetSession';
     if (process.env.NODE_ENV !== 'production') {
       getAPI = 'http://localhost:7022' + getAPI;
@@ -145,6 +228,7 @@ const Game = ({createToken}) => {
       },
       body: JSON.stringify(tokenToJson())
     })
+    setStartUp(false);
   }
 
   const validateGuess = async () => {
@@ -162,24 +246,14 @@ const Game = ({createToken}) => {
     })
     const parsedResponse = await response.json();
     return parsedResponse.valid;
+  };
 
-  }
-
-  const handleGuess = async () => {
-
+  const checkGuess = async () => {
     const validGuess = await validateGuess();
-    if(!validGuess)
-    {
+    if (!validGuess) {
       alert("Not a valid word");
       return;
-    }
-
-    
-    if (tries == 6) {
-      await handleStartUp();
     };
-    setTries((prev) => prev - 1);
-    
 
     let getAPI = '/api/CheckGuess';
     if (process.env.NODE_ENV !== 'production') {
@@ -195,14 +269,14 @@ const Game = ({createToken}) => {
     })
     const parsedResponse = await response.json();
     setColours(parsedResponse.colours);
-
-  }
-
-  const resetGame = () => {
-    setWord(Array(5).fill('_'));
-    setTries(6);
-    setColours(Array(5).fill('grey'));
-    setSessionToken(createToken());
+    if(tries == 1 ) {
+      setGameEnd(true);
+    }
+    if(checkWin(parsedResponse.colours)) {
+      setGameEnd(true);
+      setWon(true);
+    }
+    setTries((prev) => prev - 1);
   }
 
   const getAnswer = async (resultHandler) => {
@@ -222,102 +296,88 @@ const Game = ({createToken}) => {
     resultHandler(parsedResponse.word);
   }
 
-  const DisplayWord = ({tries}) => {
-    const [answer, setAnswer] = useState("");
-    if (tries == 0)
-    {
-      getAnswer(setAnswer);
-      return ( 
-        <div style={{
-          width: '100%',
-          fontSize: '60px'
-        }}>
-          The word was {answer}
-        </div>
-      );
+  const checkWin = (colours) => {
+    for (let i = 0; i < 5; i++) {
+      if (colours[i] != 'green') {
+        return false;
+      }
     }
-    else
-    {
-      return null;
-    }
+    return true;
   }
-  
+
+  const resetGame = () => {
+    setWord(Array(5).fill('_'));
+    setTries(6);
+    setColours(Array(5).fill('grey'));
+    createToken();
+    setResettingGame(true);
+    setGameEnd(false);
+    setWon(false);
+  }
+
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div style={{ 
-        height: '100vh', 
-        width: '100%'
-      }}>
+    <>
+      <StartGameDialog open={startUp} handleClose={setSession} />
+      <EndGameDialog open={gameEnd} won={won} handleClose={resetGame} getAnswer={getAnswer} />
+      <DndProvider backend={HTML5Backend}>
         <div style={{ 
-          height: '10%', 
-          width: '100%', 
-          display: 'flex',
-          background: 'lightBlue',
-          fontSize: '50px',
-          color: 'white',
-          borderStyle: 'dashed',
-          borderColor: 'black',
-          borderRadius: '5px',
-          boxSizing: 'border-box'
-        }}>
-          <div style={{ 
-            width: '50%',
-            paddingLeft: '10px'
-          }}>
-            Tries Left: {tries}
-          </div>
-          <div style={{ 
-            width: '50%',
-            paddingRight: '10px'
-          }}>
-            <Box textAlign='right'>
-              <Button
-                disabled={tries == 0}
-                color='success'
-                onClick={() => {
-                  handleGuess();
-                }}
-                variant="contained"
-              >
-                Guess
-              </Button>
-            </Box>
-          </div>
-        </div>
-        <div style={{ 
-          height: '20%', 
-          width: '100%', 
-          display: 'flex'
-        }}>
-          <Slot colour={colours[0]} index={0} word={word} changeLetter={setLetter}></Slot>
-          <Slot colour={colours[1]} index={1} word={word} changeLetter={setLetter}></Slot>
-          <Slot colour={colours[2]} index={2} word={word} changeLetter={setLetter}></Slot>
-          <Slot colour={colours[3]} index={3} word={word} changeLetter={setLetter}></Slot>
-          <Slot colour={colours[4]} index={4} word={word} changeLetter={setLetter}></Slot>
-        </div>
-        <div style={{
-          height: '25%', 
+          height: '100vh', 
           width: '100%'
         }}>
-          {CreateTiles()}
+          <div style={{ 
+            height: '10%', 
+            width: '100%', 
+            display: 'flex',
+            background: 'lightBlue',
+            fontSize: '50px',
+            color: 'white',
+            borderStyle: 'dashed',
+            borderColor: 'black',
+            borderRadius: '5px',
+            boxSizing: 'border-box'
+          }}>
+            <div style={{ 
+              width: '80%',
+              paddingLeft: '10px'
+            }}>
+              Tries Left: {tries}
+            </div>
+              <div style={{ 
+                paddingLeft: '800px',
+                width: '20%'
+                }}>
+                <Button
+                  disabled={tries == 0}
+                  color='success'
+                  onClick={() => {
+                    checkGuess();
+                  }}
+                  variant="contained"
+                >
+                  Guess
+                </Button>
+            </div>
+          </div>
+          <div style={{ 
+            height: '20%', 
+            width: '100%', 
+            display: 'flex'
+          }}>
+            <Slot colour={colours[0]} index={0} word={word} changeLetter={setLetter}></Slot>
+            <Slot colour={colours[1]} index={1} word={word} changeLetter={setLetter}></Slot>
+            <Slot colour={colours[2]} index={2} word={word} changeLetter={setLetter}></Slot>
+            <Slot colour={colours[3]} index={3} word={word} changeLetter={setLetter}></Slot>
+            <Slot colour={colours[4]} index={4} word={word} changeLetter={setLetter}></Slot>
+          </div>
+          <div style={{
+            height: '25%', 
+            width: '100%'
+          }}>
+            {createTiles()}
+          </div>
         </div>
-        <div style={{
-          width: '100%'
-        }}>
-          <Box textAlign='center'>
-            {tries != 0 ? null : <Button
-              onClick={() => {
-                resetGame();;
-              }}
-              variant="contained"
-            >
-              Try Again
-            </Button>}
-          </Box>
-        </div>
-        <DisplayWord tries={tries} />
-      </div>
-    </DndProvider>
+      </DndProvider>
+    </>
   );  
 }
 
