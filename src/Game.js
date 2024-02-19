@@ -2,10 +2,10 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
-import { checkGuess, setSession } from './Requests';
+import { checkGuess, setSession, validateGuess } from './Requests';
 import StartGameDialog from './DialogStartGame';
 import EndGameDialog from './DialogEndGame';
-import Slot, { createSlots } from './Slot';
+import { createSlots } from './Slot';
 import { createTiles } from './Tile';
 
 const Game = ({ sessionToken, createToken }) => {
@@ -16,6 +16,7 @@ const Game = ({ sessionToken, createToken }) => {
     const [colours, setColours] = useState(Array(5).fill('grey'));
     const [resettingGame, setResettingGame] = useState(false);
     const [won, setWon] = useState(false);
+    const [checkingGuess, setCheckingGuess] = useState(false);
   
     useEffect(() => {
       if(resettingGame ==  true)
@@ -64,6 +65,18 @@ const Game = ({ sessionToken, createToken }) => {
       setGameEnd(false);
       setWon(false);
     }
+
+    const handleGuess = async (word, sessionToken, handleResult) => {
+        setCheckingGuess(true);
+        const validGuess = await validateGuess(word, sessionToken);
+        if (!validGuess) {
+          alert("Not a valid word");
+          setCheckingGuess(false);
+          return;
+        };
+        checkGuess(word, sessionToken, handleResult);
+        setCheckingGuess(false);
+    }
   
     return (
       <>
@@ -84,6 +97,7 @@ const Game = ({ sessionToken, createToken }) => {
               borderStyle: 'dashed',
               borderColor: 'black',
               borderRadius: '5px',
+              fontFamily: 'Oxygen',
               boxSizing: 'border-box'
             }}>
               <div style={{ 
@@ -97,10 +111,10 @@ const Game = ({ sessionToken, createToken }) => {
                   width: '20%'
                   }}>
                   <Button
-                    disabled={tries == 0}
+                    disabled={tries == 0 || checkingGuess}
                     color='success'
                     onClick={() => {
-                      checkGuess(word, sessionToken, handleResult);
+                        handleGuess(word, sessionToken, handleResult);
                     }}
                     variant="contained"
                   >

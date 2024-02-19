@@ -7,6 +7,7 @@ import { setSession } from './Requests';
 const StartGameDialog = ({ open, token, resultHandler }) => {
   const close = () => {
     setSession(token, resultHandler);
+    resultHandler(false);
   }
   return (
     <Dialog
