@@ -15,9 +15,7 @@ const App = () => {
   };
 
   return (
-    <>
-      <Game sessionToken={token} createToken={createToken} />
-    </>
+    <Game sessionToken={token} createToken={createToken} />
   );
 }
 

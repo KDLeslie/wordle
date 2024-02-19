@@ -13,9 +13,9 @@ const EndGameDialog = ({ open, won, word, sessionToken, handleClose }) => {
   }
   useEffect(() => {
     if (open ==  true) {
-      getAnswer(setAnswer, word, sessionToken);
+      getAnswer(word, sessionToken, setAnswer);
     }
-  }, [open, word, sessionToken]
+  }, [open]
   )
   return (
     <Dialog

@@ -46,6 +46,7 @@ const Tile = ({ id, color, children }) => {
         fontSize: '70px',
         textAlign: 'center',
         background: color,
+        fontFamily: 'Oxygen',
         borderStyle: 'solid',
         borderColor: 'black',
         cursor: canDrag ? 'move' : null,
