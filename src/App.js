@@ -6,7 +6,7 @@ const App = () => {
 
   useEffect(() => {
     createToken();
-  }, [])
+  }, []);
   
   const createToken = () => {
     let token = "";
@@ -17,6 +17,6 @@ const App = () => {
   return (
     <Game sessionToken={token} createToken={createToken} />
   );
-}
+};
 
 export default App;
