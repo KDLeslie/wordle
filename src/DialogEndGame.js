@@ -3,20 +3,21 @@ import Button from '@mui/material/Button';
 import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContentText from '@mui/material/DialogContentText';
-import { getAnswer } from './Requests';
 
-const EndGameDialog = ({ open, won, word, sessionToken, handleClose }) => {
+const EndGameDialog = ({ open, won, handleGetAnswer, handleClose }) => {
   const [answer, setAnswer] = useState("");
+
   const close = () => {
     setAnswer("");
     handleClose();
-  }
+  };
+
   useEffect(() => {
-    if (open ==  true) {
-      getAnswer(word, sessionToken, setAnswer);
+    if (open === true) {
+      handleGetAnswer(setAnswer);
     }
-  }, [open]
-  )
+  }, [open, handleGetAnswer]);
+
   return (
     <Dialog
       open={open}
@@ -35,7 +36,7 @@ const EndGameDialog = ({ open, won, word, sessionToken, handleClose }) => {
         <Button onClick={close}>Play Again</Button>
       </DialogActions>
     </Dialog>
-  )
-}
+  );
+};
 
 export default EndGameDialog;

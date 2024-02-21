@@ -2,13 +2,12 @@ import Button from '@mui/material/Button';
 import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContentText from '@mui/material/DialogContentText';
-import { setSession } from './Requests';
 
-const StartGameDialog = ({ open, token, resultHandler }) => {
+const StartGameDialog = ({ open, handleClose }) => {
   const close = () => {
-    setSession(token, resultHandler);
-    resultHandler(false);
-  }
+    handleClose();
+  };
+
   return (
     <Dialog
       open={open}
@@ -27,7 +26,7 @@ const StartGameDialog = ({ open, token, resultHandler }) => {
         <Button onClick={close}>Play</Button>
       </DialogActions>
     </Dialog>
-  )
-}
+  );
+};
 
 export default StartGameDialog;
