@@ -7,6 +7,7 @@ import StartGameDialog from './DialogStartGame';
 import EndGameDialog from './DialogEndGame';
 import { createSlots } from './Slot';
 import { createTiles } from './Tile';
+import { SnackbarProvider, enqueueSnackbar } from 'notistack';
 
 const Game = ({ sessionToken, createToken }) => {
   const [startUp, setStartUp] = useState(true);
@@ -67,7 +68,15 @@ const Game = ({ sessionToken, createToken }) => {
     setCheckingGuess(true);
     validateGuess(word, (result) => {
       if (!result) {
-        alert("Not a valid word");
+        enqueueSnackbar('Not a valid Wordle word!', { 
+          autoHideDuration: 2000, 
+          variant: 'error', 
+          style: {fontSize: '20px'}, 
+          anchorOrigin: {
+            horizontal: 'center', 
+            vertical: 'top'
+          }
+        });
         setCheckingGuess(false);
         return;
       };
@@ -97,6 +106,7 @@ const Game = ({ sessionToken, createToken }) => {
             height: '100vh', 
             width: '100%'
         }}>
+          <SnackbarProvider maxSnack={1} />
           <div style={{ 
             height: '10%', 
             width: '100%', 
