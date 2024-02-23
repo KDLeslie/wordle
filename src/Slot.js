@@ -24,12 +24,16 @@ const Slot = ({ colour, index, word, changeLetter }) => {
       width: '100%', 
       fontSize: '100px',
       textAlign: 'center',
-      background: isOver ? 'blue' : colour,
+      background: isOver ? 'CornflowerBlue' : colour,
       borderStyle: 'solid',
       fontFamily: 'Oxygen',
       borderColor: 'black',
       color: 'black',
-      borderRadius: '5px'
+      borderRadius: '5px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '100px'
     }}>
       {word[index]} 
     </div>

@@ -51,7 +51,9 @@ const Tile = ({ id, color, children }) => {
       borderColor: 'black',
       cursor: canDrag ? 'move' : null,
       color: 'white',
-      borderRadius: '5px'
+      borderRadius: '5px',
+      minHeight: '100px',
+      minWidth: '60px'
     }}>
       {children} 
     </div>

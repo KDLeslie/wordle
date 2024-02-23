@@ -112,23 +112,29 @@ const Game = ({ sessionToken, createToken }) => {
             width: '100%', 
             display: 'flex',
             background: 'lightBlue',
-            fontSize: '50px',
-            color: 'white',
             borderStyle: 'dashed',
             borderColor: 'black',
             borderRadius: '5px',
             fontFamily: 'Oxygen',
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
+            justifyContent: 'space-between'
           }}>
             <div style={{ 
-              width: '80%',
-              paddingLeft: '10px'
+              width: '70%',
+              color: 'black',
+              fontSize: '50px',
+              margin: 'auto 10px',
+              justifyContent: 'left',
+              whiteSpace: 'pre'
             }}>
               Tries Left: {tries}
             </div>
-            <div style={{ 
-              paddingLeft: '800px',
-              width: '20%'
+            <div style={{
+              display: 'flex',
+              width: '30%',
+              alignItems: 'center',
+              justifyContent: 'right',
+              paddingRight: '10px'
             }}>
               <Button
                 disabled={tries === 0 || checkingGuess}
