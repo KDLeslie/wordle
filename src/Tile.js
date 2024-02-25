@@ -1,24 +1,26 @@
 import { useDrag } from 'react-dnd';
 
-export const createTiles = () => {
-  let row1 = createRow(13, 0);
-  let row2 = createRow(13, 1);
-  return(
-    <>
-      {row1}
-      {row2}
-    </>
-  );
+export const createTiles = (numRows) => {
+  let rows = [];
+  let numCols = Math.floor(26 / numRows);
+  for (let i = 0; i < numRows; i++) {
+    if(i + 1 === numRows) {
+      numCols += 26 % numRows;
+    } 
+    rows.push(createRow(numCols, numRows, i));
+  }
+  return(rows);
 };
 
-export const createRow = (numOfTiles, rowNumber) => {
+export const createRow = (numCols, totalNumRows, rowNumber) => {
   let tiles = [];
-  for (let i = 0; i < numOfTiles; i++) {
-    var letter = String.fromCharCode(97 + i + rowNumber * numOfTiles);
+  let colsPerRow = Math.floor(26 / totalNumRows);
+  for (let i = 0; i < numCols; i++) {
+    var letter = String.fromCharCode(97 + i + colsPerRow * rowNumber);
     tiles.push(<Tile key={letter} id={letter} color={'purple'}>{letter}</Tile>);
   }
   return (
-    <div style={{ 
+    <div key={'r' + rowNumber} style={{ 
       display: 'flex',
       height: '50%'
     }}>

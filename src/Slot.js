@@ -9,7 +9,7 @@ export const createSlots = (colours, word, setLetter) => {
 };
 
 const Slot = ({ colour, index, word, changeLetter }) => {
-  const [{ isOver }, drop] = useDrop(() => ({
+  const [{ isOver }, dropRef] = useDrop(() => ({
       accept: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
       drop: (item) => changeLetter(index, item.type, word),
       canDrop: () => true,
@@ -20,7 +20,7 @@ const Slot = ({ colour, index, word, changeLetter }) => {
     [word]
   );
   return (
-    <div ref={drop} style={{
+    <div ref={dropRef} style={{
       width: '100%', 
       fontSize: '100px',
       textAlign: 'center',

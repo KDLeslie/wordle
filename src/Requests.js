@@ -13,7 +13,7 @@ export const setSession = async (sessionToken) => {
   })
 };
 
-export const validateGuess = async (word, resultHandler) => {
+export const validateGuess = async (guess, resultHandler) => {
   let getAPI = '/api/ValidateGuess';
   if (process.env.NODE_ENV !== 'production') {
     getAPI = 'http://localhost:7022' + getAPI;
@@ -24,13 +24,13 @@ export const validateGuess = async (word, resultHandler) => {
       'Accept': 'application/json, text/plain, */*',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({word})
+    body: JSON.stringify({guess})
   })
   const parsedResponse = await response.json();
   resultHandler(parsedResponse.valid);
 };
 
-export const checkGuess = async (word, sessionToken, resultHandler) => {
+export const checkGuess = async (guess, sessionToken, resultHandler) => {
   let getAPI = '/api/CheckGuess';
   if (process.env.NODE_ENV !== 'production') {
     getAPI = 'http://localhost:7022' + getAPI;
@@ -41,7 +41,7 @@ export const checkGuess = async (word, sessionToken, resultHandler) => {
       'Accept': 'application/json, text/plain, */*',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({word, sessionToken})
+    body: JSON.stringify({guess, sessionToken})
   })
   const parsedResponse = await response.json();
   resultHandler(parsedResponse.colours);

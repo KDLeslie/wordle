@@ -12,7 +12,7 @@ import { SnackbarProvider, enqueueSnackbar } from 'notistack';
 const Game = ({ sessionToken, createToken }) => {
   const [startUp, setStartUp] = useState(true);
   const [gameEnd, setGameEnd] = useState(false);
-  const [word, setWord] = useState(Array(5).fill('_'));
+  const [guess, setGuess] = useState(Array(5).fill('_'));
   const [tries, setTries] = useState(6);
   const [colours, setColours] = useState(Array(5).fill('grey'));
   const [resettingGame, setResettingGame] = useState(false);
@@ -29,11 +29,11 @@ const Game = ({ sessionToken, createToken }) => {
   const setLetter = (index, letter, word) => {
     const newWord = word.slice();
     newWord[index] = letter;
-    setWord(newWord);
+    setGuess(newWord);
   };
 
   const resetGame = () => {
-    setWord(Array(5).fill('_'));
+    setGuess(Array(5).fill('_'));
     setTries(6);
     setColours(Array(5).fill('grey'));
     createToken();
@@ -140,7 +140,7 @@ const Game = ({ sessionToken, createToken }) => {
                 disabled={tries === 0 || checkingGuess}
                 color='success'
                 onClick={() => {
-                  handleGuess(word, sessionToken, handleGuessResult);
+                  handleGuess(guess, sessionToken, handleGuessResult);
                 }}
                 variant="contained"
               >
@@ -153,13 +153,13 @@ const Game = ({ sessionToken, createToken }) => {
             width: '100%', 
             display: 'flex'
           }}>
-            {createSlots(colours, word, setLetter)}
+            {createSlots(colours, guess, setLetter)}
           </div>
           <div style={{
             height: '25%', 
             width: '100%'
           }}>
-            {createTiles()}
+            {createTiles(3)}
           </div>
         </div>
       </DndProvider>
