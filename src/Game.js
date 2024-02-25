@@ -94,7 +94,7 @@ const Game = ({ sessionToken, createToken }) => {
       setGameEnd(true);
       setWon(true);
     }
-    setTries((prev) => prev - 1);
+    setTries(tries - 1); // Not using (prev) => prev - 1 to prevent bugs from clicking to fast
   };
 
   return (
