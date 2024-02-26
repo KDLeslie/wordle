@@ -1,7 +1,7 @@
 import { useDrag } from 'react-dnd';
 
 export const createTiles = (numRows) => {
-  let rows = [];
+  const rows = [];
   let numCols = Math.floor(26 / numRows);
   for (let i = 0; i < numRows; i++) {
     if(i + 1 === numRows) {
@@ -13,10 +13,10 @@ export const createTiles = (numRows) => {
 };
 
 export const createRow = (numCols, totalNumRows, rowNumber) => {
-  let tiles = [];
-  let colsPerRow = Math.floor(26 / totalNumRows);
+  const tiles = [];
+  const colsPerRow = Math.floor(26 / totalNumRows);
   for (let i = 0; i < numCols; i++) {
-    var letter = String.fromCharCode(97 + i + colsPerRow * rowNumber);
+    const letter = String.fromCharCode(97 + i + colsPerRow * rowNumber);
     tiles.push(<Tile key={letter} id={letter} color={'purple'}>{letter}</Tile>);
   }
   return (
