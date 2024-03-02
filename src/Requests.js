@@ -1,19 +1,3 @@
-export const setSession = async (sessionToken) => {
-  let getAPI = '/api/SetSession';
-  if (process.env.NODE_ENV !== 'production') {
-    getAPI = 'http://localhost:7022' + getAPI;
-  }
-  await fetch(getAPI, {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json, text/plain, */*',
-      'Content-Type': 'application/json'
-    },
-    credentials: 'include',
-    body: JSON.stringify({sessionToken})
-  })
-};
-
 export const getGUID = async (resultHandler) => {
   let getAPI = '/api/GetGUID';
   if (process.env.NODE_ENV !== 'production') {
@@ -28,6 +12,23 @@ export const getGUID = async (resultHandler) => {
   })
   const parsedResponse = await response.json();
   resultHandler(parsedResponse.guid);
+};
+
+export const setSession = async (sessionToken, resultHandler) => {
+  let getAPI = '/api/SetSession';
+  if (process.env.NODE_ENV !== 'production') {
+    getAPI = 'http://localhost:7022' + getAPI;
+  }
+  await fetch(getAPI, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include',
+    body: JSON.stringify({sessionToken})
+  })
+  resultHandler();
 };
 
 export const validateGuess = async (guess, resultHandler) => {
@@ -83,8 +84,8 @@ export const getAnswer = async (sessionToken, resultHandler) => {
   resultHandler(parsedResponse.word);
 };
 
-export const getScore = async (resultHandler) => {
-  let getAPI = '/api/GetScore';
+export const getRatio = async (resultHandler) => {
+  let getAPI = '/api/GetRatio';
   if (process.env.NODE_ENV !== 'production') {
     getAPI = 'http://localhost:7022' + getAPI;
   }
@@ -100,8 +101,25 @@ export const getScore = async (resultHandler) => {
   resultHandler(parsedResponse.score);
 };
 
-export const incrementScore = async (resultHandler) => {
-  let getAPI = '/api/IncrementScore';
+export const incrementNumerator = async (resultHandler) => {
+  let getAPI = '/api/IncrementNumerator';
+  if (process.env.NODE_ENV !== 'production') {
+    getAPI = 'http://localhost:7022' + getAPI;
+  }
+  const response = await fetch(getAPI, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include',
+  })
+  const parsedResponse = await response.json();
+  resultHandler(parsedResponse.score);
+};
+
+export const incrementDenominator = async (resultHandler) => {
+  let getAPI = '/api/IncrementDenominator';
   if (process.env.NODE_ENV !== 'production') {
     getAPI = 'http://localhost:7022' + getAPI;
   }

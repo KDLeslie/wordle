@@ -1,32 +1,27 @@
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Button from '@mui/material/Button';
-import { checkGuess, getAnswer, getGUID, getScore, incrementScore, setSession, validateGuess } from './Requests';
+import { checkGuess, getAnswer, getGUID, incrementDenominator, incrementNumerator, setSession, validateGuess } from './Requests';
 import StartGameDialog from './DialogStartGame';
 import EndGameDialog from './DialogEndGame';
 import { createSlots } from './Slot';
 import { createTiles } from './Tile';
 import { SnackbarProvider, enqueueSnackbar } from 'notistack';
+import AddTriesDialog from './DialogAddTries';
 
 const Game = () => {
   const [startUp, setStartUp] = useState(true);
   const [gameEnd, setGameEnd] = useState(false);
+  const [addTriesDialogOpen, setAddTriesDialogOpen] = useState(false);
   const [guess, setGuess] = useState(Array(5).fill('_'));
-  const [tries, setTries] = useState(6);
+  const [tries, setTries] = useState(null);
   const [colours, setColours] = useState(Array(5).fill('grey'));
   const [won, setWon] = useState(false);
   const [checkingGuess, setCheckingGuess] = useState(false);
   const [sessionToken, setSessionToken] = useState(null);
-  const [score, setScore] = useState(0);
-
-  useEffect(() => {
-    if (sessionToken == null) {
-      createToken();
-    } else {
-      setSession(sessionToken);
-    }
-  }, [sessionToken]);
+  const [ratio, setRatio] = useState(null);
+  const [safeMode, setSafeMode] = useState(false);
 
   const setLetter = (index, letter, word) => {
     const newWord = word.slice();
@@ -34,13 +29,9 @@ const Game = () => {
     setGuess(newWord);
   };
 
-  const resetGame = () => {
-    setGuess(Array(5).fill('_'));
-    setTries(6);
-    setColours(Array(5).fill('grey'));
-    createToken();
-    setGameEnd(false);
-    setWon(false);
+  const handleAddTries = () => {
+    setTries(tries + 1);
+    setSafeMode(true);
   };
 
   const checkWin = (colours) => {
@@ -52,21 +43,47 @@ const Game = () => {
     return true;
   };
 
+  const resetGame = () => {
+    setGuess(Array(5).fill('_'));
+    setTries(6);
+    setColours(Array(5).fill('grey'));
+    handleGameReset();
+    setWon(false);
+    setSafeMode(false);
+  };
+
   const handleStartGameDialogClose = () => {
     setStartUp(false);
-    getScore(setScore); // Work around fix
+    resetGame();
   };
 
   const handleEndGameDialogClose = () => {
+    setGameEnd(false);
     resetGame();
+  };
+
+  const handleOpenAddTriesDialog = () => {
+    if(safeMode) {
+      handleAddTries();
+    }
+    else {
+      setAddTriesDialogOpen(true);
+    }
+  };
+
+  const handleAddTriesDialogClose = () => {
+    setAddTriesDialogOpen(false);
   };
 
   const handleGetAnswer = (setState) => {
     getAnswer(sessionToken, setState);
   };
 
-  const createToken = () => {
-    getGUID(setSessionToken);
+  const handleGameReset = () => {
+    getGUID((result) => {
+      setSessionToken(result);
+      setSession(result, () => incrementDenominator(setRatio));
+    })
   };
 
   const handleGuess = (word, sessionToken, handleResult) => {
@@ -98,7 +115,9 @@ const Game = () => {
     if (checkWin(colours)) {
       setGameEnd(true);
       setWon(true);
-      incrementScore(setScore);
+      if(!safeMode) {
+        incrementNumerator(setRatio);
+      }
     }
     setTries(tries - 1); // Not using (prev) => prev - 1 to prevent bugs from clicking to fast
   };
@@ -107,6 +126,7 @@ const Game = () => {
     <>
       <StartGameDialog open={startUp} handleClose={handleStartGameDialogClose} />
       <EndGameDialog open={gameEnd} won={won} handleGetAnswer={handleGetAnswer} handleClose={handleEndGameDialogClose} />
+      <AddTriesDialog open={addTriesDialogOpen} handleAddTries={handleAddTries} handleClose={handleAddTriesDialogClose} />
       <DndProvider backend={HTML5Backend}>
         <div style={{ 
             height: '100vh', 
@@ -126,7 +146,7 @@ const Game = () => {
             justifyContent: 'space-between'
           }}>
             <div style={{ 
-              width: '50%',
+              width: '40%',
               color: 'black',
               fontSize: '50px',
               margin: 'auto 10px',
@@ -140,17 +160,31 @@ const Game = () => {
               color: 'black',
               fontSize: '25px',
               margin: 'auto 10px',
-              justifyContent: 'right',
+              justifyContent: 'left',
               whiteSpace: 'pre'
             }}>
-              Words Guessed Correctly: {score}
+              Words Guessed Correctly: {ratio}
             </div>
             <div style={{
               display: 'flex',
               width: '10%',
               alignItems: 'center',
-              justifyContent: 'right',
-              paddingRight: '10px'
+              justifyContent: 'center',
+            }}>
+              <Button
+                disabled={tries === 0}
+                onClick={handleOpenAddTriesDialog}
+                variant="contained"
+              >
+                Add Tries
+              </Button>
+            </div>
+            <div style={{
+              display: 'flex',
+              width: '10%',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingRight: '5px'
             }}>
               <Button
                 disabled={tries === 0 || checkingGuess}
