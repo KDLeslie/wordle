@@ -5,18 +5,18 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContentText from '@mui/material/DialogContentText';
 
 const EndGameDialog = ({ open, won, handleGetAnswer, handleClose }) => {
-  const [answer, setAnswer] = useState("");
-
-  const close = () => {
-    setAnswer("");
-    handleClose();
-  };
+  const [answer, setAnswer] = useState(null);
 
   useEffect(() => {
     if (open === true) {
       handleGetAnswer(setAnswer);
     }
   }, [open, handleGetAnswer]);
+
+  const close = () => {
+    setAnswer(null);
+    handleClose();
+  };
 
   return (
     <Dialog

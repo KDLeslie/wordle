@@ -19,6 +19,7 @@ const Slot = ({ colour, index, word, changeLetter }) => {
     }),
     [word]
   );
+  
   return (
     <div ref={dropRef} style={{
       width: '100%', 
