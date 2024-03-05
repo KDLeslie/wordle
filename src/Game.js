@@ -149,7 +149,6 @@ const Game = () => {
       <StartGameDialog open={startUp} handleClose={handleStartGameDialogClose} />
       <EndGameDialog open={gameEnd} won={won} handleGetAnswer={handleGetAnswer} handleClose={handleEndGameDialogClose} />
       <AddTriesDialog open={addTriesDialogOpen} handleAddTries={handleAddTries} handleClose={handleAddTriesDialogClose} />
-      <DndProvider backend={HTML5Backend}>
         <div style={{ 
             height: '100vh', 
             width: '100%'
@@ -180,7 +179,6 @@ const Game = () => {
             {createSnapshots(guessHistory, colourHistory, index)}
           </div>
         </div>
-      </DndProvider>
     </>
   );  
 };

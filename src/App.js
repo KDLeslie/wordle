@@ -1,6 +1,9 @@
 import { useEffect } from 'react';
 import Game from './Game';
 import { getGUID } from './Requests';
+import { TouchBackend } from 'react-dnd-touch-backend';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DndProvider } from 'react-dnd';
 
 const setCookieIfNotExists = (cookieName, cookieValue, expirationDays) => {
   if (!getCookie(cookieName)) {
@@ -25,6 +28,11 @@ const getCookie = (cookieName) => {
   }
   return null;
 }
+
+const isTouchDevice = 'ontouchstart' in window || navigator.msMaxTouchPoints;
+const backend = isTouchDevice ? TouchBackend : HTML5Backend;
+
+
 const App = () => {
   const cookieKey = 'userId';
 
@@ -37,7 +45,9 @@ const App = () => {
   }, []);
 
   return (
-    <Game />
+    <DndProvider backend={backend}>
+      <Game />
+    </DndProvider>
   );
 };
 
