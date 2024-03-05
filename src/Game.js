@@ -1,7 +1,6 @@
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import { useState } from 'react';
-import Button from '@mui/material/Button';
 import { checkGuess, getAnswer, getGUID, incrementDenominator, incrementNumerator, setSession, validateGuess } from './Requests';
 import StartGameDialog from './DialogStartGame';
 import EndGameDialog from './DialogEndGame';
@@ -9,29 +8,48 @@ import { createSlots } from './Slot';
 import { createTiles } from './Tile';
 import { SnackbarProvider, enqueueSnackbar } from 'notistack';
 import AddTriesDialog from './DialogAddTries';
+import { createSnapshots } from './Snapshot';
+import MenuBar from './MenuBar';
 
 const Game = () => {
   const [startUp, setStartUp] = useState(true);
   const [gameEnd, setGameEnd] = useState(false);
   const [addTriesDialogOpen, setAddTriesDialogOpen] = useState(false);
-  const [guess, setGuess] = useState(Array(5).fill('_'));
-  const [tries, setTries] = useState(null);
-  const [colours, setColours] = useState(Array(5).fill('grey'));
+  const [guessHistory, setGuessHistory] = useState(Array(1).fill(Array(5).fill('_')));
+  const [colourHistory, setColourHistory] = useState(Array(1).fill(Array(5).fill('grey')));
+  const [tries, setTries] = useState(6);
   const [won, setWon] = useState(false);
-  const [checkingGuess, setCheckingGuess] = useState(false);
   const [sessionToken, setSessionToken] = useState(null);
-  const [ratio, setRatio] = useState(null);
+  const [ratio, setRatio] = useState("");
   const [safeMode, setSafeMode] = useState(false);
+  const [checkingGuess, setCheckingGuess] = useState(false);
+  const [index, setIndex] = useState(0);
+  
+  const currentGuess = guessHistory[index].slice();
+  const currentColours = colourHistory[index].slice();
+
+  const updateColours = (colours) => {
+    const oldHist = colourHistory.slice();
+    oldHist[index] = colours;
+    const newHist = [...oldHist, colours];
+    setColourHistory(newHist);
+  }
+
+  const setGuess = (word) => {
+    const newHist = [...guessHistory.slice(), word];
+    setGuessHistory(newHist);
+  }
+
+  const setWord = (word) => {
+    const newHist = guessHistory.slice();
+    newHist[index] = word;
+    setGuessHistory(newHist);
+  }
 
   const setLetter = (index, letter, word) => {
     const newWord = word.slice();
     newWord[index] = letter;
-    setGuess(newWord);
-  };
-
-  const handleAddTries = () => {
-    setTries(tries + 1);
-    setSafeMode(true);
+    setWord(newWord);
   };
 
   const checkWin = (colours) => {
@@ -44,12 +62,16 @@ const Game = () => {
   };
 
   const resetGame = () => {
-    setGuess(Array(5).fill('_'));
+    setGuessHistory(Array(1).fill(Array(5).fill('_')));
+    setColourHistory(Array(1).fill(Array(5).fill('grey')));
     setTries(6);
-    setColours(Array(5).fill('grey'));
-    handleGameReset();
+    setIndex(0);
     setWon(false);
     setSafeMode(false);
+    getGUID((result) => {
+      setSessionToken(result);
+      setSession(result, () => incrementDenominator(setRatio));
+    })
   };
 
   const handleStartGameDialogClose = () => {
@@ -79,11 +101,9 @@ const Game = () => {
     getAnswer(sessionToken, setState);
   };
 
-  const handleGameReset = () => {
-    getGUID((result) => {
-      setSessionToken(result);
-      setSession(result, () => incrementDenominator(setRatio));
-    })
+  const handleAddTries = () => {
+    setTries(tries + 1);
+    setSafeMode(true);
   };
 
   const handleGuess = (word, sessionToken, handleResult) => {
@@ -108,7 +128,7 @@ const Game = () => {
   };
 
   const handleGuessResult = (colours) => {
-    setColours(colours);
+    updateColours(colours);
     if (tries === 1 ) {
       setGameEnd(true);
     }
@@ -120,6 +140,8 @@ const Game = () => {
       }
     }
     setTries(tries - 1); // Not using (prev) => prev - 1 to prevent bugs from clicking to fast
+    setIndex(index + 1);
+    setGuess(currentGuess);
   };
 
   return (
@@ -133,83 +155,29 @@ const Game = () => {
             width: '100%'
         }}>
           <SnackbarProvider maxSnack={1} />
-          <div style={{ 
-            height: '10%', 
-            width: '100%', 
-            display: 'flex',
-            background: 'lightBlue',
-            borderStyle: 'dashed',
-            borderColor: 'black',
-            borderRadius: '5px',
-            fontFamily: 'Oxygen',
-            boxSizing: 'border-box',
-            justifyContent: 'space-between'
-          }}>
-            <div style={{ 
-              width: '40%',
-              color: 'black',
-              fontSize: '50px',
-              margin: 'auto 10px',
-              whiteSpace: 'pre'
-            }}>
-              Tries Left: {tries}
-            </div>
-            <div style={{ 
-              display: 'flex',
-              width: '40%',
-              color: 'black',
-              fontSize: '25px',
-              margin: 'auto 10px',
-              justifyContent: 'left',
-              whiteSpace: 'pre'
-            }}>
-              Words Guessed Correctly: {ratio}
-            </div>
-            <div style={{
-              display: 'flex',
-              width: '10%',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              <Button
-                disabled={tries === 0}
-                onClick={handleOpenAddTriesDialog}
-                variant="contained"
-              >
-                Add Tries
-              </Button>
-            </div>
-            <div style={{
-              display: 'flex',
-              width: '10%',
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingRight: '5px'
-            }}>
-              <Button
-                disabled={tries === 0 || checkingGuess}
-                color='success'
-                onClick={() => {
-                  handleGuess(guess, sessionToken, handleGuessResult);
-                }}
-                variant="contained"
-              >
-                Guess
-              </Button>
-            </div>
-          </div>
+          <MenuBar tries={tries} ratio={ratio} guess={currentGuess} checkingGuess={checkingGuess} sessionToken={sessionToken} handleGuess={handleGuess} handleGuessResult={handleGuessResult} handleOpenAddTriesDialog={handleOpenAddTriesDialog} />
           <div style={{ 
             height: '20%', 
             width: '100%', 
             display: 'flex'
           }}>
-            {createSlots(colours, guess, setLetter)}
+            {createSlots(currentColours, currentGuess, setLetter)}
           </div>
           <div style={{
-            height: '25%', 
+            height: '40%', 
             width: '100%'
           }}>
             {createTiles(3)}
+          </div>
+          <div style={{ 
+            height: '7%', 
+            width: '100%', 
+            display: 'flex',
+            boxSizing: 'border-box',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+          }}>
+            {createSnapshots(guessHistory, colourHistory, index)}
           </div>
         </div>
       </DndProvider>

@@ -13,6 +13,7 @@ export const createTiles = (numRows) => {
 };
 
 export const createRow = (numCols, totalNumRows, rowNumber) => {
+  const height = 100 / totalNumRows;
   const tiles = [];
   const colsPerRow = Math.floor(26 / totalNumRows);
   for (let i = 0; i < numCols; i++) {
@@ -22,7 +23,7 @@ export const createRow = (numCols, totalNumRows, rowNumber) => {
   return (
     <div key={'r' + rowNumber} style={{ 
       display: 'flex',
-      height: '50%'
+      height: `${height}%`
     }}>
       {tiles}
     </div>
@@ -45,7 +46,7 @@ const Tile = ({ id, color, children }) => {
   return ( isDragging ? null :
     <div ref={dragRef} id={id} style={{
       width: '100%', 
-      fontSize: '70px',
+      fontSize: '85px',
       textAlign: 'center',
       background: color,
       fontFamily: 'Oxygen',
@@ -54,7 +55,7 @@ const Tile = ({ id, color, children }) => {
       cursor: canDrag ? 'move' : null,
       color: 'white',
       borderRadius: '5px',
-      minHeight: '100px',
+      minHeight: '60px',
       minWidth: '60px'
     }}>
       {children} 
