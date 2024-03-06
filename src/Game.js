@@ -1,41 +1,41 @@
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { DndProvider } from 'react-dnd';
 import { useState } from 'react';
-import { checkGuess, getAnswer, getGUID, incrementDenominator, incrementNumerator, setSession, validateGuess } from './Requests';
-import StartGameDialog from './DialogStartGame';
-import EndGameDialog from './DialogEndGame';
-import { createSlots } from './Slot';
-import { createTiles } from './Tile';
+import { checkGuess, getAnswer, getGUID, incrementDenominator, incrementNumerator, setSession, validateGuess } from './Communications';
+import StartGameDialog from './StartGameDialog';
+import EndGameDialog from './EndGameDialog';
 import { SnackbarProvider, enqueueSnackbar } from 'notistack';
-import AddTriesDialog from './DialogAddTries';
-import { createSnapshots } from './Snapshot';
+import AddTriesDialog from './AddTriesDialog';
 import MenuBar from './MenuBar';
+import SlotPlane from './SlotPlane';
+import TilePlane from './TilePlane';
+import SnapshotPlane from './SnapshotPlane';
 
 const Game = () => {
-  const [startUp, setStartUp] = useState(true);
-  const [gameEnd, setGameEnd] = useState(false);
+  const [startGameDialogOpen, setStartGameDialogOpen] = useState(true);
+  const [endGameDialogOpen, setEndGameDialogOpen] = useState(false);
   const [addTriesDialogOpen, setAddTriesDialogOpen] = useState(false);
   const [guessHistory, setGuessHistory] = useState(Array(1).fill(Array(5).fill('_')));
   const [colourHistory, setColourHistory] = useState(Array(1).fill(Array(5).fill('grey')));
   const [tries, setTries] = useState(6);
   const [won, setWon] = useState(false);
-  const [sessionToken, setSessionToken] = useState(null);
+  const [sessionToken, setSessionToken] = useState("");
   const [ratio, setRatio] = useState("");
   const [safeMode, setSafeMode] = useState(false);
   const [checkingGuess, setCheckingGuess] = useState(false);
   const [index, setIndex] = useState(0);
-  
+
   const currentGuess = guessHistory[index].slice();
   const currentColours = colourHistory[index].slice();
 
-  const updateColours = (colours) => {
+  const addColoursToHistory = (colours) => {
     const oldHist = colourHistory.slice();
     oldHist[index] = colours;
     const newHist = [...oldHist, colours];
     setColourHistory(newHist);
   }
 
-  const setGuess = (word) => {
+  const addGuessToHistory = (word) => {
+    // differs from 'addColoursToHistory' as guessHistory already
+    // correctly holds the current guess whereas colourHistory does not
     const newHist = [...guessHistory.slice(), word];
     setGuessHistory(newHist);
   }
@@ -75,12 +75,12 @@ const Game = () => {
   };
 
   const handleStartGameDialogClose = () => {
-    setStartUp(false);
+    setStartGameDialogOpen(false);
     resetGame();
   };
 
   const handleEndGameDialogClose = () => {
-    setGameEnd(false);
+    setEndGameDialogOpen(false);
     resetGame();
   };
 
@@ -89,6 +89,7 @@ const Game = () => {
       handleAddTries();
     }
     else {
+      // open warning dialog if it's the first time adding tries
       setAddTriesDialogOpen(true);
     }
   };
@@ -97,8 +98,8 @@ const Game = () => {
     setAddTriesDialogOpen(false);
   };
 
-  const handleGetAnswer = (setState) => {
-    getAnswer(sessionToken, setState);
+  const handleGetAnswer = (resultHandler) => {
+    getAnswer(sessionToken, resultHandler);
   };
 
   const handleAddTries = () => {
@@ -110,12 +111,12 @@ const Game = () => {
     setCheckingGuess(true);
     validateGuess(word, (result) => {
       if (!result) {
-        enqueueSnackbar('Not a valid Wordle word!', { 
-          autoHideDuration: 2000, 
-          variant: 'error', 
-          style: {fontSize: '20px'}, 
+        enqueueSnackbar('Not a valid Wordle word!', {
+          autoHideDuration: 2000,
+          variant: 'error',
+          style: {fontSize: '20px'},
           anchorOrigin: {
-            horizontal: 'center', 
+            horizontal: 'center',
             vertical: 'top'
           }
         });
@@ -128,59 +129,70 @@ const Game = () => {
   };
 
   const handleGuessResult = (colours) => {
-    updateColours(colours);
+    // last try so end game
     if (tries === 1 ) {
-      setGameEnd(true);
+      setEndGameDialogOpen(true);
     }
     if (checkWin(colours)) {
-      setGameEnd(true);
+      setEndGameDialogOpen(true);
       setWon(true);
-      if(!safeMode) {
+      // user added tries so don't increase score
+      if (!safeMode) {
         incrementNumerator(setRatio);
       }
     }
     setTries(tries - 1); // Not using (prev) => prev - 1 to prevent bugs from clicking to fast
     setIndex(index + 1);
-    setGuess(currentGuess);
+    addColoursToHistory(colours);
+    addGuessToHistory(currentGuess);
   };
 
   return (
     <>
-      <StartGameDialog open={startUp} handleClose={handleStartGameDialogClose} />
-      <EndGameDialog open={gameEnd} won={won} handleGetAnswer={handleGetAnswer} handleClose={handleEndGameDialogClose} />
-      <AddTriesDialog open={addTriesDialogOpen} handleAddTries={handleAddTries} handleClose={handleAddTriesDialogClose} />
-        <div style={{ 
-            height: '100vh', 
+      <StartGameDialog
+        open={startGameDialogOpen}
+        handleClose={handleStartGameDialogClose}
+      />
+      <EndGameDialog
+        open={endGameDialogOpen}
+        didWin={won}
+        handleGetAnswer={handleGetAnswer}
+        handleClose={handleEndGameDialogClose}
+      />
+      <AddTriesDialog
+        open={addTriesDialogOpen}
+        handleAddTries={handleAddTries}
+        handleClose={handleAddTriesDialogClose}
+      />
+        <div style={{
+            height: '100vh',
             width: '100%'
         }}>
           <SnackbarProvider maxSnack={1} />
-          <MenuBar tries={tries} ratio={ratio} guess={currentGuess} checkingGuess={checkingGuess} sessionToken={sessionToken} handleGuess={handleGuess} handleGuessResult={handleGuessResult} handleOpenAddTriesDialog={handleOpenAddTriesDialog} />
-          <div style={{ 
-            height: '20%', 
-            width: '100%', 
-            display: 'flex'
-          }}>
-            {createSlots(currentColours, currentGuess, setLetter)}
-          </div>
-          <div style={{
-            height: '40%', 
-            width: '100%'
-          }}>
-            {createTiles(3)}
-          </div>
-          <div style={{ 
-            height: '7%', 
-            width: '100%', 
-            display: 'flex',
-            boxSizing: 'border-box',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-          }}>
-            {createSnapshots(guessHistory, colourHistory, index)}
-          </div>
+          <MenuBar
+            tries={tries}
+            ratio={ratio}
+            guess={currentGuess}
+            checkingGuess={checkingGuess}
+            sessionToken={sessionToken}
+            handleGuess={handleGuess}
+            handleGuessResult={handleGuessResult}
+            handleOpenAddTriesDialog={handleOpenAddTriesDialog}
+          />
+          <SlotPlane
+          currentColours={currentColours}
+          currentGuess={currentGuess}
+          setLetter={setLetter}
+          />
+          <TilePlane />
+          <SnapshotPlane
+            guessHistory={guessHistory}
+            colourHistory={colourHistory}
+            index={index}
+          />
         </div>
     </>
-  );  
+  );
 };
 
 export default Game;

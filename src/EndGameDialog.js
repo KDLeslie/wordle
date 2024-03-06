@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContentText from '@mui/material/DialogContentText';
 
-const EndGameDialog = ({ open, won, handleGetAnswer, handleClose }) => {
+const EndGameDialog = ({ open, didWin, handleGetAnswer, handleClose }) => {
   const [answer, setAnswer] = useState(null);
 
   useEffect(() => {
@@ -25,11 +25,11 @@ const EndGameDialog = ({ open, won, handleGetAnswer, handleClose }) => {
       onClick={null}
     >
       <DialogTitle id="alert-dialog-title">
-        {won ? "Congrats!" : "Game Over!"}
+        {didWin ? "Congrats!" : "Game Over!"}
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          The word was {answer}.
+          The word was: {answer}.
         </DialogContentText>
       </DialogContent>
       <DialogActions>

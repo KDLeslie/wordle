@@ -4,7 +4,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContentText from '@mui/material/DialogContentText';
 
 const AddTriesDialog = ({ open, handleAddTries, handleClose }) => {
-
   const close = () => {
     handleClose();
   };
@@ -24,7 +23,7 @@ const AddTriesDialog = ({ open, handleAddTries, handleClose }) => {
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          You will gain more tries but your score won't increase, 
+          You will gain more tries but your score won't increase,
           even if you get the word correct. Do you still want more
           tries?
         </DialogContentText>

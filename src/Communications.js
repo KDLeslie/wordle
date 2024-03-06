@@ -8,8 +8,9 @@ export const getGUID = async (resultHandler) => {
     headers: {
       'Accept': 'application/json, text/plain, */*',
       'Content-Type': 'application/json'
-    },
+    }
   })
+  // TODO: Give all these error handling
   const parsedResponse = await response.json();
   resultHandler(parsedResponse.guid);
 };

@@ -19,7 +19,11 @@ const StartGameDialog = ({ open, handleClose }) => {
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          You have 6 chances to guess a 5 letter word.
+          You have 6 chances to guess a 5 letter word. After you guess a word
+          you will receive feedback on that word. A green background means a
+          letter is in the right spot. A yellow background means the letter is
+          not in the right spot but is located somewhere else in the word. Grey
+          means that letter does not appear in the word. Good Luck!
         </DialogContentText>
       </DialogContent>
       <DialogActions>

@@ -1,27 +1,35 @@
 import { useDrag } from 'react-dnd';
 
-export const createTiles = (numRows) => {
+const createTiles = (numRows) => {
   const rows = [];
   let numCols = Math.floor(26 / numRows);
   for (let i = 0; i < numRows; i++) {
     if(i + 1 === numRows) {
+      // last row needs the remainder as well
       numCols += 26 % numRows;
-    } 
-    rows.push(createRow(numCols, numRows, i));
+    }
+    rows.push(createTileRow(i, numCols, numRows));
   }
   return(rows);
 };
 
-export const createRow = (numCols, totalNumRows, rowNumber) => {
+const createTileRow = (rowIndex, numCols, totalNumRows) => {
   const height = 100 / totalNumRows;
   const tiles = [];
   const colsPerRow = Math.floor(26 / totalNumRows);
   for (let i = 0; i < numCols; i++) {
-    const letter = String.fromCharCode(97 + i + colsPerRow * rowNumber);
-    tiles.push(<Tile key={letter} id={letter} color={'purple'}>{letter}</Tile>);
+    const letter = String.fromCharCode(97 + i + colsPerRow * rowIndex);
+    tiles.push(
+      <Tile
+        key={letter}
+        id={letter}
+        color={'purple'}
+      >
+        {letter}
+      </Tile>);
   }
   return (
-    <div key={'r' + rowNumber} style={{ 
+    <div key={'r' + rowIndex} style={{
       display: 'flex',
       height: `${height}%`
     }}>
@@ -45,7 +53,7 @@ const Tile = ({ id, color, children }) => {
 
   return ( isDragging ? null :
     <div ref={dragRef} id={id} style={{
-      width: '100%', 
+      width: '100%',
       fontSize: '85px',
       textAlign: 'center',
       background: color,
@@ -58,9 +66,20 @@ const Tile = ({ id, color, children }) => {
       minHeight: '60px',
       minWidth: '60px'
     }}>
-      {children} 
+      {children}
     </div>
   );
 };
 
-export default Tile;
+const TilePlane = () => {
+  return(
+    <div style={{
+      height: '40%',
+      width: '100%'
+    }}>
+      {createTiles(3)}
+    </div>
+  );
+}
+
+export default TilePlane;
