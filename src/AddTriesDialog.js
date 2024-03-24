@@ -11,7 +11,7 @@ const AddTriesDialog = ({ open, handleAddTries, handleClose }) => {
   const addTries = () => {
     handleAddTries();
     close();
-  }
+  };
 
   return (
     <Dialog

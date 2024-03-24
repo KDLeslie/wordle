@@ -1,15 +1,16 @@
-import { useState } from 'react';
-import { checkGuess, getAnswer, getGUID, incrementDenominator, incrementNumerator, setSession, validateGuess } from './Communications';
+import { useEffect, useState } from 'react';
+import { checkGuess, getAnswer, getGUID, getRatio, incrementDenominator, incrementNumerator, 
+  setSession, validateGuess } from './Communications';
 import StartGameDialog from './StartGameDialog';
 import EndGameDialog from './EndGameDialog';
-import { SnackbarProvider, enqueueSnackbar } from 'notistack';
+import { useSnackbar } from 'notistack';
 import AddTriesDialog from './AddTriesDialog';
 import MenuBar from './MenuBar';
 import SlotPlane from './SlotPlane';
 import TilePlane from './TilePlane';
 import SnapshotPlane from './SnapshotPlane';
 
-const Game = () => {
+const Game = ({ profile, handleLogIn, handleLogOut }) => {
   const [startGameDialogOpen, setStartGameDialogOpen] = useState(true);
   const [endGameDialogOpen, setEndGameDialogOpen] = useState(false);
   const [addTriesDialogOpen, setAddTriesDialogOpen] = useState(false);
@@ -22,9 +23,34 @@ const Game = () => {
   const [safeMode, setSafeMode] = useState(false);
   const [checkingGuess, setCheckingGuess] = useState(false);
   const [index, setIndex] = useState(0);
+  const { enqueueSnackbar } = useSnackbar()
 
   const currentGuess = guessHistory[index].slice();
   const currentColours = colourHistory[index].slice();
+
+  useEffect(() => {
+    const resetGame = () => {
+      setGuessHistory(Array(1).fill(Array(5).fill('_')));
+      setColourHistory(Array(1).fill(Array(5).fill('grey')));
+      setTries(6);
+      setIndex(0);
+      setWon(false);
+      setSafeMode(false);
+      getGUID((result) => {
+        setSessionToken(result);
+        setSession(result, profile?.email, () => incrementDenominator(profile?.email, setRatio));
+      })
+    };
+    // reset the game if the user logs in/out during 
+    // the game
+    if(!startGameDialogOpen && !endGameDialogOpen) {
+      resetGame(); 
+    } else {
+      // Note: currently gets called one extra time than 
+      // needed
+      getRatio(profile?.email, (result) => setRatio(result));
+    }
+  }, [profile, startGameDialogOpen, endGameDialogOpen]);
 
   const addColoursToHistory = (colours) => {
     const oldHist = colourHistory.slice();
@@ -35,7 +61,8 @@ const Game = () => {
 
   const addGuessToHistory = (word) => {
     // differs from 'addColoursToHistory' as guessHistory already
-    // correctly holds the current guess whereas colourHistory does not
+    // correctly holds the current guess whereas colourHistory 
+    // does not
     const newHist = [...guessHistory.slice(), word];
     setGuessHistory(newHist);
   }
@@ -61,27 +88,12 @@ const Game = () => {
     return true;
   };
 
-  const resetGame = () => {
-    setGuessHistory(Array(1).fill(Array(5).fill('_')));
-    setColourHistory(Array(1).fill(Array(5).fill('grey')));
-    setTries(6);
-    setIndex(0);
-    setWon(false);
-    setSafeMode(false);
-    getGUID((result) => {
-      setSessionToken(result);
-      setSession(result, () => incrementDenominator(setRatio));
-    })
-  };
-
   const handleStartGameDialogClose = () => {
     setStartGameDialogOpen(false);
-    resetGame();
   };
 
   const handleEndGameDialogClose = () => {
     setEndGameDialogOpen(false);
-    resetGame();
   };
 
   const handleOpenAddTriesDialog = () => {
@@ -99,7 +111,7 @@ const Game = () => {
   };
 
   const handleGetAnswer = (resultHandler) => {
-    getAnswer(sessionToken, resultHandler);
+    getAnswer(sessionToken, profile?.email, resultHandler);
   };
 
   const handleAddTries = () => {
@@ -107,23 +119,15 @@ const Game = () => {
     setSafeMode(true);
   };
 
-  const handleGuess = (word, sessionToken, handleResult) => {
+  const handleGuess = () => {
     setCheckingGuess(true);
-    validateGuess(word, (result) => {
+    validateGuess(currentGuess, (result) => {
       if (!result) {
-        enqueueSnackbar('Not a valid Wordle word!', {
-          autoHideDuration: 2000,
-          variant: 'error',
-          style: {fontSize: '20px'},
-          anchorOrigin: {
-            horizontal: 'center',
-            vertical: 'top'
-          }
-        });
+        enqueueSnackbar('Not a valid Wordle word!', {variant: 'error'});
         setCheckingGuess(false);
         return;
       };
-      checkGuess(word, sessionToken, handleResult);
+      checkGuess(currentGuess, sessionToken, profile?.email, handleGuessResult);
       setCheckingGuess(false);
     });
   };
@@ -138,7 +142,7 @@ const Game = () => {
       setWon(true);
       // user added tries so don't increase score
       if (!safeMode) {
-        incrementNumerator(setRatio);
+        incrementNumerator(profile?.email, setRatio);
       }
     }
     setTries(tries - 1); // Not using (prev) => prev - 1 to prevent bugs from clicking to fast
@@ -151,13 +155,19 @@ const Game = () => {
     <>
       <StartGameDialog
         open={startGameDialogOpen}
+        profile={profile}
         handleClose={handleStartGameDialogClose}
+        handleLogIn={handleLogIn}
+        handleLogOut={handleLogOut}
       />
       <EndGameDialog
         open={endGameDialogOpen}
         didWin={won}
+        profile={profile}
         handleGetAnswer={handleGetAnswer}
         handleClose={handleEndGameDialogClose}
+        handleLogIn={handleLogIn}
+        handleLogOut={handleLogOut}
       />
       <AddTriesDialog
         open={addTriesDialogOpen}
@@ -168,16 +178,15 @@ const Game = () => {
             height: '100vh',
             width: '100%'
         }}>
-          <SnackbarProvider maxSnack={1} />
           <MenuBar
             tries={tries}
             ratio={ratio}
-            guess={currentGuess}
             checkingGuess={checkingGuess}
-            sessionToken={sessionToken}
+            profile={profile}
             handleGuess={handleGuess}
-            handleGuessResult={handleGuessResult}
             handleOpenAddTriesDialog={handleOpenAddTriesDialog}
+            handleLogIn={handleLogIn}
+            handleLogOut={handleLogOut}
           />
           <SlotPlane
           currentColours={currentColours}

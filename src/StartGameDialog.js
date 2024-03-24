@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContentText from '@mui/material/DialogContentText';
 
-const StartGameDialog = ({ open, handleClose }) => {
+const StartGameDialog = ({ open, profile, handleClose, handleLogIn, handleLogOut }) => {
   const close = () => {
     handleClose();
   };
@@ -27,7 +27,18 @@ const StartGameDialog = ({ open, handleClose }) => {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={close}>Play</Button>
+        <Button
+          onClick={profile === null ? handleLogIn : handleLogOut}
+          color='secondary'
+        >
+          {profile === null ? "Log In" : "Log Out"}
+        </Button>
+        <Button
+          onClick={close}
+          color='primary'
+        >
+          Play
+        </Button>
       </DialogActions>
     </Dialog>
   );

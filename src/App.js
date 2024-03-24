@@ -1,14 +1,14 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Game from './Game';
-import { getGUID } from './Communications';
-import { TouchBackend } from 'react-dnd-touch-backend';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { DndProvider } from 'react-dnd';
+import { getGUID, getProfileInfo } from './Communications';
+import { googleLogout, useGoogleLogin } from '@react-oauth/google';
+import { useSnackbar } from 'notistack';
 
 const setCookie = (cookieKey, cookieValue, expirationDays) => {
   const expirationDate = new Date();
   expirationDate.setDate(expirationDate.getDate() + expirationDays);
-  document.cookie = `${cookieKey}=${cookieValue}; expires=${expirationDate.toUTCString()}; path=/`;
+  document.cookie = `${cookieKey}=${cookieValue}; \
+  expires=${expirationDate.toUTCString()}; path=/`;
 }
 
 const getCookie = (cookieKey) => {
@@ -27,27 +27,42 @@ const getCookie = (cookieKey) => {
   return null;
 }
 
-// Check whether user is on mobile or desktop
-const isTouchDevice = 'ontouchstart' in window || navigator.msMaxTouchPoints;
-const backend = isTouchDevice ? TouchBackend : HTML5Backend;
-
 const App = () => {
+  const [user, setUser] = useState(null);
+  const [profile, setProfile ] = useState(null);
+  const {enqueueSnackbar} = useSnackbar();
+
   const cookieKey = 'userId';
 
   useEffect(() => {
+    if (user) {
+      getProfileInfo(user.access_token, setProfile);
+    }
+
     // If the user doesn't have an identification cookie,
     // create one and give it to them
-    if (getCookie(cookieKey) === null) {
-      getGUID((guid) => {
-        setCookie(cookieKey, guid, 99999);
-      });
+    if (!getCookie(cookieKey)) {
+      getGUID((guid) => setCookie(cookieKey, guid, 99999));
     }
-  }, []);
+  }, [user]);
+
+  const handleLogIn = useGoogleLogin({
+    onSuccess: (codeResponse) => setUser(codeResponse),
+    onError: (error) => enqueueSnackbar(error.message, {variant: "error"}),
+  });
+
+  const handleLogOut = () => {
+    googleLogout();
+    setProfile(null);
+    setUser(null);
+  };
 
   return (
-    <DndProvider backend={backend}>
-      <Game />
-    </DndProvider>
+    <Game
+      profile={profile}
+      handleLogIn={handleLogIn}
+      handleLogOut={handleLogOut}
+    />
   );
 };
 
