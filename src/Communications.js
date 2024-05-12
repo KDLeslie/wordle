@@ -7,7 +7,10 @@ export const getProfileInfo = async (access_token, resultHandler) => {
       Accept: 'application/json'
     }
   });
-  // TODO: Give all these error handling
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(response.statusText + ": " + text);
+  }
   const parsedResponse = await response.json();
   resultHandler(parsedResponse);
 };
@@ -24,6 +27,10 @@ export const getGoogleClientID = async (resultHandler) => {
       'Content-Type': 'application/json'
     },
   });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(response.statusText + ": " + text);
+  }
   const parsedResponse = await response.json();
   resultHandler(parsedResponse);
 };
@@ -44,12 +51,12 @@ export const getGUID = async (resultHandler) => {
   resultHandler(parsedResponse.guid);
 };
 
-export const setSession = async (sessionToken, email, resultHandler) => {
+export const setSession = async (sessionToken, email) => {
   let getAPI = '/api/SetSession';
   if (process.env.NODE_ENV !== 'production') {
     getAPI = 'http://localhost:7022' + getAPI;
   }
-  await fetch(getAPI, {
+  const response = await fetch(getAPI, {
     method: 'POST',
     headers: {
       'Accept': 'application/json, text/plain, */*',
@@ -58,7 +65,10 @@ export const setSession = async (sessionToken, email, resultHandler) => {
     credentials: 'include',
     body: JSON.stringify({sessionToken, email})
   });
-  resultHandler();
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(response.statusText + ": " + text);
+  }
 };
 
 export const validateGuess = async (guess, resultHandler) => {
@@ -92,6 +102,10 @@ export const checkGuess = async (guess, sessionToken, email, resultHandler) => {
     credentials: 'include',
     body: JSON.stringify({guess, sessionToken, email})
   });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(response.statusText + ": " + text);
+  }
   const parsedResponse = await response.json();
   resultHandler(parsedResponse.colours);
 };
@@ -110,6 +124,10 @@ export const getAnswer = async (sessionToken, email, resultHandler) => {
     credentials: 'include',
     body: JSON.stringify({sessionToken, email})
   });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(response.statusText + ": " + text);
+  }
   const parsedResponse = await response.json();
   resultHandler(parsedResponse.word);
 };
@@ -128,6 +146,10 @@ export const getRatio = async (email, resultHandler) => {
     credentials: 'include',
     body: JSON.stringify({email})
   });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(response.statusText + ": " + text);
+  }
   const parsedResponse = await response.json();
   resultHandler(parsedResponse.score);
 };
@@ -146,6 +168,10 @@ export const incrementNumerator = async (email, resultHandler) => {
     credentials: 'include',
     body: JSON.stringify({email})
   });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(response.statusText + ": " + text);
+  }
   const parsedResponse = await response.json();
   resultHandler(parsedResponse.score);
 };
@@ -164,6 +190,10 @@ export const incrementDenominator = async (email, resultHandler) => {
     credentials: 'include',
     body: JSON.stringify({email})
   });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(response.statusText + ": " + text);
+  }
   const parsedResponse = await response.json();
   resultHandler(parsedResponse.score);
 };

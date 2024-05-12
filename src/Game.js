@@ -22,39 +22,44 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
   const [ratio, setRatio] = useState("");
   const [safeMode, setSafeMode] = useState(false);
   const [checkingGuess, setCheckingGuess] = useState(false);
-  const [index, setIndex] = useState(0);
+  const [guessCount, setGuessCount] = useState(0);
   const { enqueueSnackbar } = useSnackbar()
 
-  const currentGuess = guessHistory[index].slice();
-  const currentColours = colourHistory[index].slice();
+  const currentGuess = guessHistory[guessCount].slice();
+  const currentColours = colourHistory[guessCount].slice();
 
   useEffect(() => {
     const resetGame = () => {
       setGuessHistory(Array(1).fill(Array(5).fill('_')));
       setColourHistory(Array(1).fill(Array(5).fill('grey')));
       setTries(6);
-      setIndex(0);
+      setGuessCount(0);
       setWon(false);
       setSafeMode(false);
       getGUID((result) => {
         setSessionToken(result);
-        setSession(result, profile?.email, () => incrementDenominator(profile?.email, setRatio));
-      })
+        setSession(result, profile?.email)
+          .then(() => 
+            incrementDenominator(profile?.email, setRatio)
+              .catch((error) => enqueueSnackbar(error.message + " Please refresh the page", {variant: "error"})))
+        .catch((error) => enqueueSnackbar(error.message + " Please refresh the page", {variant: "error"}));
+      }).catch((error) => enqueueSnackbar(error.message + " Please refresh the page", {variant: "error"}))
     };
     // reset the game if the user logs in/out during 
     // the game
-    if(!startGameDialogOpen && !endGameDialogOpen) {
+    if (!startGameDialogOpen && !endGameDialogOpen) {
       resetGame(); 
     } else {
       // Note: currently gets called one extra time than 
       // needed
-      getRatio(profile?.email, (result) => setRatio(result));
+      getRatio(profile?.email, (result) => setRatio(result))
+      .catch((error) => enqueueSnackbar(error.message + " Please refresh the page"));
     }
-  }, [profile, startGameDialogOpen, endGameDialogOpen]);
+  }, [profile, startGameDialogOpen, endGameDialogOpen, enqueueSnackbar]);
 
   const addColoursToHistory = (colours) => {
     const oldHist = colourHistory.slice();
-    oldHist[index] = colours;
+    oldHist[guessCount] = colours;
     const newHist = [...oldHist, colours];
     setColourHistory(newHist);
   }
@@ -69,7 +74,7 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
 
   const setWord = (word) => {
     const newHist = guessHistory.slice();
-    newHist[index] = word;
+    newHist[guessCount] = word;
     setGuessHistory(newHist);
   }
 
@@ -97,7 +102,7 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
   };
 
   const handleOpenAddTriesDialog = () => {
-    if(safeMode) {
+    if (safeMode) {
       handleAddTries();
     }
     else {
@@ -111,7 +116,8 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
   };
 
   const handleGetAnswer = (resultHandler) => {
-    getAnswer(sessionToken, profile?.email, resultHandler);
+    getAnswer(sessionToken, profile?.email, resultHandler)
+    .catch((error) => enqueueSnackbar(error.message + " Please refresh the page", {variant: "error"}));
   };
 
   const handleAddTries = () => {
@@ -123,13 +129,15 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
     setCheckingGuess(true);
     validateGuess(currentGuess, (result) => {
       if (!result) {
-        enqueueSnackbar('Not a valid Wordle word!', {variant: 'error'});
-        setCheckingGuess(false);
+        enqueueSnackbar('Not a valid Wordle word!', {variant: 'warning'});
+        // setCheckingGuess(false);
         return;
       };
-      checkGuess(currentGuess, sessionToken, profile?.email, handleGuessResult);
-      setCheckingGuess(false);
-    });
+      checkGuess(currentGuess, sessionToken, profile?.email, handleGuessResult)
+      .catch((error) => enqueueSnackbar(error.message + " Please try again later", {variant: "error"}));
+      // setCheckingGuess(false);
+    }).catch((error) => enqueueSnackbar(error.message + " Please try again later", {variant: "error"}))
+      .finally(() => setCheckingGuess(false));
   };
 
   const handleGuessResult = (colours) => {
@@ -142,11 +150,12 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
       setWon(true);
       // user added tries so don't increase score
       if (!safeMode) {
-        incrementNumerator(profile?.email, setRatio);
+        incrementNumerator(profile?.email, setRatio)
+          .catch((error) => enqueueSnackbar(error.message + " Please try again later", {variant: "error"}));
       }
     }
     setTries(tries - 1); // Not using (prev) => prev - 1 to prevent bugs from clicking to fast
-    setIndex(index + 1);
+    setGuessCount(guessCount + 1);
     addColoursToHistory(colours);
     addGuessToHistory(currentGuess);
   };
@@ -197,7 +206,7 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
           <SnapshotPlane
             guessHistory={guessHistory}
             colourHistory={colourHistory}
-            index={index}
+            guessCount={guessCount}
           />
         </div>
     </>

@@ -16,7 +16,9 @@ const AppContainer = () => {
 
   useEffect(() => {
     if (!clientID) {
-      getGoogleClientID((result) => setClientID(result.clientID));
+      getGoogleClientID((result) => setClientID(result.clientID)).catch((error) => {
+        alert(error + ". Please try refreshing the page");
+      });
     }
   }, [clientID]);
 

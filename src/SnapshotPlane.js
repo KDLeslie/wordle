@@ -1,10 +1,10 @@
-const createSnapshots = (guessHistory, colourHistory, index) => {
+const createSnapshots = (guessHistory, colourHistory, guessCount) => {
   const snapshots = [];
   // create an entire row of 6 at a time
-  const total = Math.ceil(index / 6) * 6;
+  const total = Math.ceil(guessCount / 6) * 6;
   for (let i = 0; i < total; i++) {
     let display = true;
-    if (i >= index) {
+    if (i >= guessCount) {
       display = false;
     }
     snapshots.push(
@@ -74,7 +74,7 @@ const SnapshotSlot = ({ colour, index, word }) => {
   );
 };
 
-const SnapshotPlane = ({ guessHistory, colourHistory, index }) => {
+const SnapshotPlane = ({ guessHistory, colourHistory, guessCount }) => {
   return(
     <div style={{
       width: '100%',
@@ -83,7 +83,7 @@ const SnapshotPlane = ({ guessHistory, colourHistory, index }) => {
       justifyContent: 'space-between',
       flexWrap: 'wrap'
       }}>
-        {createSnapshots(guessHistory, colourHistory, index)}
+        {createSnapshots(guessHistory, colourHistory, guessCount)}
     </div>
   );
 }

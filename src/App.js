@@ -29,22 +29,26 @@ const getCookie = (cookieKey) => {
 
 const App = () => {
   const [user, setUser] = useState(null);
-  const [profile, setProfile ] = useState(null);
+  const [profile, setProfile] = useState(null);
   const {enqueueSnackbar} = useSnackbar();
 
   const cookieKey = 'userId';
 
   useEffect(() => {
     if (user) {
-      getProfileInfo(user.access_token, setProfile);
+      getProfileInfo(user.access_token, setProfile).catch((error) => {
+        enqueueSnackbar(error.message + " Please try again later", {variant: "error"})
+      });
     }
 
     // If the user doesn't have an identification cookie,
     // create one and give it to them
     if (!getCookie(cookieKey)) {
-      getGUID((guid) => setCookie(cookieKey, guid, 99999));
+      getGUID((guid) => setCookie(cookieKey, guid, 99999)).catch((error) => {
+        enqueueSnackbar(error.message + " Please try again later", {variant: "error"})
+      });
     }
-  }, [user]);
+  }, [user, enqueueSnackbar]);
 
   const handleLogIn = useGoogleLogin({
     onSuccess: (codeResponse) => setUser(codeResponse),
