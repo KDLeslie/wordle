@@ -52,8 +52,7 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
     } else {
       // Note: currently gets called one extra time than 
       // needed
-      getRatio(profile?.email, (result) => setRatio(result))
-      .catch((error) => enqueueSnackbar(error.message + " Please refresh the page"));
+      getRatio(profile?.email, (result) => setRatio(result));
     }
   }, [profile, startGameDialogOpen, endGameDialogOpen, enqueueSnackbar]);
 

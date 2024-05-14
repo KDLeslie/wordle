@@ -146,10 +146,6 @@ export const getRatio = async (email, resultHandler) => {
     credentials: 'include',
     body: JSON.stringify({email})
   });
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(response.statusText + ": " + text);
-  }
   const parsedResponse = await response.json();
   resultHandler(parsedResponse.score);
 };
