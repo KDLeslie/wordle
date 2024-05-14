@@ -24,16 +24,17 @@ const EndGameDialog = ({ open, didWin, profile, handleGetAnswer,
       open={open}
       onClose={close}
       onClick={null}
+      disableScrollLock={true}
     >
-      <DialogTitle id="alert-dialog-title">
+      <DialogTitle id="alert-dialog-title" textAlign="center">
         {didWin ? "Congrats!" : "Game Over!"}
       </DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
+        <DialogContentText id="alert-dialog-description" textAlign="center">
           The word was: {answer}.
         </DialogContentText>
       </DialogContent>
-      <DialogActions>
+      <DialogActions style={{ justifyContent: "center" }}>
         <Button
           onClick={profile === null ? handleLogIn : handleLogOut}
           color='secondary'

@@ -17,18 +17,19 @@ const AddTriesDialog = ({ open, handleAddTries, handleClose }) => {
     <Dialog
       open={open}
       onClose={close}
+      disableScrollLock={true}
     >
-      <DialogTitle id="alert-dialog-title">
+      <DialogTitle id="alert-dialog-title" textAlign="center">
         Add More Tries?
       </DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
+        <DialogContentText id="alert-dialog-description" textAlign="center">
           You will gain more tries but your score won't increase,
           even if you get the word correct. Do you still want more
           tries?
         </DialogContentText>
       </DialogContent>
-      <DialogActions>
+      <DialogActions style={{ justifyContent: "center" }}>
         <Button onClick={close} color='secondary'>Cancel</Button>
         <Button onClick={addTries} color='primary'>Add Tries</Button>
       </DialogActions>

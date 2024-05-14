@@ -13,12 +13,13 @@ const StartGameDialog = ({ open, profile, handleClose, handleLogIn, handleLogOut
       open={open}
       onClose={close}
       onClick={null}
+      disableScrollLock={true}
     >
-      <DialogTitle id="alert-dialog-title">
+      <DialogTitle id="alert-dialog-title" textAlign="center">
         {"Welcome to Wordle!"}
       </DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
+        <DialogContentText id="alert-dialog-description" textAlign="center">
           You have 6 chances to guess a 5 letter word. After you guess a word
           you will receive feedback on that word. A green background means a
           letter is in the right spot. A yellow background means the letter is
@@ -26,7 +27,7 @@ const StartGameDialog = ({ open, profile, handleClose, handleLogIn, handleLogOut
           means that letter does not appear in the word. Good Luck!
         </DialogContentText>
       </DialogContent>
-      <DialogActions>
+      <DialogActions style={{ justifyContent: "center" }}>
         <Button
           onClick={profile === null ? handleLogIn : handleLogOut}
           color='secondary'
