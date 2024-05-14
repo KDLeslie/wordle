@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getGoogleClientID } from './Communications';
+import { getGoogleClientID } from './services/Communications';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';

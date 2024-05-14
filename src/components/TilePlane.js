@@ -1,5 +1,5 @@
 import { useDrag } from 'react-dnd';
-import "./TilePlane.css";
+import "../styles/TilePlane.css";
 
 const createTiles = () => {
   const tiles = [];

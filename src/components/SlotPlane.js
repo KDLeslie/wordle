@@ -1,5 +1,5 @@
 import { useDrop } from 'react-dnd';
-import "./SlotPlane.css";
+import "../styles/SlotPlane.css";
 
 const createSlots = (colours, word, setLetter) => {
   const slots = [];

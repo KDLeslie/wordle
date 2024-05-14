@@ -1,5 +1,5 @@
 import React from 'react';
-import "./SnapshotPlane.css";
+import "../styles/SnapshotPlane.css";
 
 const createSnapshots = (guessHistory, colourHistory, guessCount) => {
   const snapshots = [];

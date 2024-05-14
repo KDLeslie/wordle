@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { checkGuess, getAnswer, getGUID, getRatio, incrementDenominator, incrementNumerator, 
-  setSession, validateGuess } from './Communications';
-import StartGameDialog from './StartGameDialog';
-import EndGameDialog from './EndGameDialog';
+  setSession, validateGuess } from './services/Communications';
+import StartGameDialog from './dialogs/StartGameDialog';
+import EndGameDialog from './dialogs/EndGameDialog';
 import { useSnackbar } from 'notistack';
-import AddTriesDialog from './AddTriesDialog';
-import MenuBar from './MenuBar';
-import SlotPlane from './SlotPlane';
-import TilePlane from './TilePlane';
-import SnapshotPlane from './SnapshotPlane';
+import AddTriesDialog from './dialogs/AddTriesDialog';
+import MenuBar from './components/MenuBar';
+import SlotPlane from './components/SlotPlane';
+import TilePlane from './components/TilePlane';
+import SnapshotPlane from './components/SnapshotPlane';
 
 const Game = ({ profile, handleLogIn, handleLogOut }) => {
   const [startGameDialogOpen, setStartGameDialogOpen] = useState(true);

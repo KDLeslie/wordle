@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import "./MenuBar.css";
+import "../styles/MenuBar.css";
 
 const MenuBar = ({ tries, ratio, checkingGuess, profile,
   handleGuess, handleOpenAddTriesDialog, handleLogIn, handleLogOut }) => {

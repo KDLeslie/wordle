@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Game from './Game';
-import { getGUID, getProfileInfo } from './Communications';
+import { getGUID, getProfileInfo } from './services/Communications';
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import { useSnackbar } from 'notistack';
 
