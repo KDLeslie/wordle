@@ -1,4 +1,5 @@
 import { useDrop } from 'react-dnd';
+import "./SlotPlane.css";
 
 const createSlots = (colours, word, setLetter) => {
   const slots = [];
@@ -30,21 +31,11 @@ const Slot = ({ colour, index, word, changeLetter }) => {
   );
 
   return (
-    <div ref={dropRef} style={{
-      width: '100%',
-      fontSize: '100px',
-      textAlign: 'center',
-      background: isOver ? 'CornflowerBlue' : colour,
-      borderStyle: 'solid',
-      fontFamily: 'Oxygen',
-      borderColor: 'black',
-      color: 'black',
-      borderRadius: '5px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100px'
-    }}>
+    <div 
+      ref={dropRef}
+      className={`slot ${isOver ? 'slot-over' : ''}`}
+      style={isOver ? null : { background: colour }}
+    >
       {word[index]}
     </div>
   );
@@ -52,11 +43,7 @@ const Slot = ({ colour, index, word, changeLetter }) => {
 
 const SlotPlane = ({ currentColours, currentGuess, setLetter }) => {
   return(
-    <div style={{
-      height: '20%',
-      width: '100%',
-      display: 'flex'
-    }}>
+    <div className="slot-plane">
       {createSlots(currentColours, currentGuess, setLetter)}
     </div>
   );

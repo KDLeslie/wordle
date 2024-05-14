@@ -1,0 +1,73 @@
+.menu-bar {
+    height: 10%;
+    min-height: 70px;
+    display: flex;
+    background: mistyRose;
+    border-style: solid;
+    border-color: black;
+    border-radius: 5px;
+    font-family: Oxygen;
+    box-sizing: border-box;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  
+  .tries-left-text {
+    color: black;
+    text-shadow: 1px 1px 3px #000000;
+    font-size: calc(5px + 2vw);
+    margin: auto 5px;
+    white-space: pre;
+  }
+  
+  .words-guessed-text {
+    color: forestGreen;
+    text-shadow: 1px 1px 3px forestGreen;
+    font-size: calc(5px + 2vw);
+    margin: auto 5px;
+    white-space: pre;
+  }
+  
+  .buttons {
+    display: flex;
+    gap: 5px;
+    margin: auto 5px;
+  }
+  
+  @media only screen and (min-width: 601px) {
+    .menu-bar {
+      flex-wrap: nowrap;
+    }
+  
+    .tries-left-text {
+      order: 1;
+    }
+  
+    .words-guessed-text {
+      order: 2;
+    }
+  
+    .buttons {
+      order: 3;
+    }
+  }
+  
+  @media only screen and (max-width: 600px) {
+    .menu-bar {
+      flex-direction: column;
+      justify-content: center;
+    }
+  
+    .tries-left-text,
+    .words-guessed-text {
+      width: 100%;
+      order: 1; /* Keep Tries Left on top */
+      text-align: center;
+    }
+  
+    .buttons {
+      width: 100%;
+      order: 2; /* Move buttons underneath */
+      justify-content: center;
+    }
+  }

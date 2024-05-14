@@ -1,89 +1,54 @@
+import React from 'react';
+import "./SnapshotPlane.css";
+
 const createSnapshots = (guessHistory, colourHistory, guessCount) => {
   const snapshots = [];
-  // create an entire row of 6 at a time
-  const total = Math.ceil(guessCount / 6) * 6;
-  for (let i = 0; i < total; i++) {
-    let display = true;
-    if (i >= guessCount) {
-      display = false;
-    }
+  for (let i = 0; i < guessCount; i++) {
     snapshots.push(
       <Snapshot
         key={'h' + i}
         guess={guessHistory[i]}
         colours={colourHistory[i]}
-        display={display}
       />
     );
   }
-  return(snapshots);
+  return snapshots;
 }
 
-const Snapshot = ({ guess, colours, display }) => {
+const Snapshot = ({ guess, colours }) => {
   return (
-    <div style={{
-      display: 'flex',
-      width: '15%',
-      height: '100%',
-      visibility: display ? null : 'hidden',
-      paddingTop: '5px',
-      paddingBottom: '5px'
-    }}>
+    <div className="snapshot">
       {createSnapshotSlots(colours, guess)}
     </div>
   );
 };
 
 const createSnapshotSlots = (colours, word) => {
-  if(colours === undefined || word === undefined) {
+  if (colours === undefined || word === undefined) {
     return;
   }
-  const slots = [];
-  for (let i = 0; i < 5; i++) {
-    slots.push(
-      <SnapshotSlot
-        key={i}
-        colour={colours[i]}
-        index={i}
-        word={word}
-      />
-    );
-  }
-  return(slots);
+  return colours.map((colour, index) => (
+    <SnapshotSlot
+      key={index}
+      colour={colour}
+      index={index}
+      word={word}
+    />
+  ));
 };
 
 const SnapshotSlot = ({ colour, index, word }) => {
   return (
-    <div style={{
-      width: '100%',
-      fontSize: '50px',
-      textAlign: 'center',
-      background: colour,
-      borderStyle: 'solid',
-      fontFamily: 'Oxygen',
-      borderColor: 'black',
-      color: 'black',
-      borderRadius: '5px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '10px'
-    }}>
+    <div className="snapshot-slot" style={{ background: colour }}>
       {word[index]}
     </div>
   );
 };
 
 const SnapshotPlane = ({ guessHistory, colourHistory, guessCount }) => {
-  return(
-    <div style={{
-      width: '100%',
-      display: 'flex',
-      boxSizing: 'border-box',
-      justifyContent: 'space-between',
-      flexWrap: 'wrap'
-      }}>
-        {createSnapshots(guessHistory, colourHistory, guessCount)}
+  return (
+    <div className="snapshot-plane">
+      {createSnapshots(guessHistory, colourHistory, guessCount)}
     </div>
   );
 }

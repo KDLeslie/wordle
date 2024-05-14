@@ -183,8 +183,7 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
         handleClose={handleAddTriesDialogClose}
       />
         <div style={{
-            height: '100vh',
-            width: '100%'
+
         }}>
           <MenuBar
             tries={tries}

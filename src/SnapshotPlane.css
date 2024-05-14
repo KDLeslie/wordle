@@ -1,0 +1,31 @@
+.snapshot-plane {
+    display: flex;
+    box-sizing: border-box;
+    justify-content: center;
+    column-gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .snapshot {
+    flex-grow: 1;
+    display: flex;
+    min-width: calc(100% / 4);
+    padding-top: 5px;
+    padding-bottom: 5px;
+    max-width: calc(100% / 3);
+  }
+  
+  .snapshot-slot {
+    width: 100%;
+    text-align: center;
+    border-style: solid;
+    font-family: Oxygen;
+    border-color: black;
+    color: black;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(10px + 6vh);
+    font-size: calc(10px + 4vmin);
+  }

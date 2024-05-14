@@ -1,0 +1,25 @@
+.slot-plane {
+    height: 20vh;
+    max-height: 200px;
+    width: 100%;
+    display: flex;
+  }
+  
+  .slot {
+    width: 100%;
+    font-size: 100px;
+    text-align: center;
+    border-style: solid;
+    font-family: Oxygen;
+    border-color: black;
+    color: black;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 10vmin);
+  }
+  
+  .slot-over {
+    background: CornflowerBlue;
+  }
