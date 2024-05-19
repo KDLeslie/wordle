@@ -32,7 +32,7 @@ const MenuBar = ({ tries, ratio, checkingGuess, profile,
             color='secondary'
             onClick={profile == null ? handleLogIn : handleLogOut}
             variant={profile == null ? "outlined" : "contained"}
-            sx={{...buttonStyles, maxWidth: null, border: (profile == null ? '2px solid' : null)}}
+            style={{...buttonStyles, maxWidth: null, border: (profile == null ? '2px solid' : null)}}
           >
             {profile == null ? "Log In" : profile.email}
           </Button>
@@ -47,7 +47,7 @@ const MenuBar = ({ tries, ratio, checkingGuess, profile,
             onClick={handleOpenAddTriesDialog}
             variant="contained"
             color="primary"
-            sx={buttonStyles}
+            style={buttonStyles}
           >
             Add Tries
           </Button>
@@ -62,7 +62,7 @@ const MenuBar = ({ tries, ratio, checkingGuess, profile,
             color='success'
             onClick={handleClick}
             variant="contained"
-            sx={buttonStyles}
+            style={buttonStyles}
           >
             Guess
           </Button>
