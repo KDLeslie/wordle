@@ -1,4 +1,5 @@
-import { Button } from "@mui/material";
+import { Button, Tooltip } from "@mui/material";
+import Zoom from '@mui/material/Zoom';
 import "../styles/MenuBar.css";
 
 const MenuBar = ({ tries, ratio, checkingGuess, profile,
@@ -22,35 +23,50 @@ const MenuBar = ({ tries, ratio, checkingGuess, profile,
         Words Guessed Correctly: {ratio}
       </div>
       <div className="buttons">
-        <Button
-          size="small"
-          color='secondary'
-          onClick={profile == null ? handleLogIn : handleLogOut}
-          variant={profile == null ? "outlined" : "contained"}
-          sx={{...buttonStyles, maxWidth: null, border: (profile == null ? '2px solid' : null)}}
+        <Tooltip
+          TransitionComponent={Zoom} 
+          title={profile == null ? "Log In" : "Log Out"}
         >
-          {profile == null ? "Log In" : profile.email}
-        </Button>
-        <Button
-          size="small"
-          disabled={tries === 0}
-          onClick={handleOpenAddTriesDialog}
-          variant="contained"
-          color="primary"
-          sx={buttonStyles}
+          <Button
+            size="small"
+            color='secondary'
+            onClick={profile == null ? handleLogIn : handleLogOut}
+            variant={profile == null ? "outlined" : "contained"}
+            sx={{...buttonStyles, maxWidth: null, border: (profile == null ? '2px solid' : null)}}
+          >
+            {profile == null ? "Log In" : profile.email}
+          </Button>
+        </Tooltip>
+        <Tooltip
+          TransitionComponent={Zoom} 
+          title="Add More Tries"
         >
-          Add Tries
-        </Button>
-        <Button
-          size="small"
-          disabled={tries === 0 || checkingGuess}
-          color='success'
-          onClick={handleClick}
-          variant="contained"
-          sx={buttonStyles}
+          <Button
+            size="small"
+            disabled={tries === 0}
+            onClick={handleOpenAddTriesDialog}
+            variant="contained"
+            color="primary"
+            sx={buttonStyles}
+          >
+            Add Tries
+          </Button>
+        </Tooltip>
+        <Tooltip
+          TransitionComponent={Zoom} 
+          title="Guess The Word"
         >
-          Guess
-        </Button>
+          <Button
+            size="small"
+            disabled={tries === 0 || checkingGuess}
+            color='success'
+            onClick={handleClick}
+            variant="contained"
+            sx={buttonStyles}
+          >
+            Guess
+          </Button>
+        </Tooltip>
       </div>
     </div>
   );
