@@ -6,7 +6,7 @@ const createSlots = (colours, word, setLetter) => {
   for (let i = 0; i < 5; i++) {
     slots.push(
       <Slot
-        key={i}
+        key={"Slot_" + i}
         colour={colours[i]}
         index={i}
         word={word}
@@ -18,9 +18,10 @@ const createSlots = (colours, word, setLetter) => {
 };
 
 const Slot = ({ colour, index, word, changeLetter }) => {
+  const letters = Array.from({ length: 26 }, (_, i) => String.fromCharCode(97 + i));
+
   const [{ isOver }, dropRef] = useDrop(() => ({
-      accept: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
-        'm','n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
+      accept: letters,
       drop: (item) => changeLetter(index, item.type, word),
       canDrop: () => true,
       collect: (monitor) => ({

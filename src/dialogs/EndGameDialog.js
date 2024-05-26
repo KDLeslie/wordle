@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContentText from '@mui/material/DialogContentText';
 
-const EndGameDialog = ({ open, didWin, profile, handleGetAnswer, 
+const EndGameDialog = ({ open, didWin, loggedOut, handleGetAnswer, 
   handleClose, handleLogIn, handleLogOut }) => {
   const [answer, setAnswer] = useState(null);
 
@@ -36,12 +36,14 @@ const EndGameDialog = ({ open, didWin, profile, handleGetAnswer,
       </DialogContent>
       <DialogActions style={{ justifyContent: "center" }}>
         <Button
-          onClick={profile === null ? handleLogIn : handleLogOut}
+          onClick={loggedOut ? handleLogIn : handleLogOut}
           color='secondary'
         >
-          {profile === null ? "Login" : "Logout"}
+          {loggedOut ? "Login" : "Logout"}
         </Button>
-        <Button onClick={close}>Play Again</Button>
+        <Button onClick={close}>
+          Play Again
+        </Button>
       </DialogActions>
     </Dialog>
   );

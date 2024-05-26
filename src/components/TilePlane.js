@@ -7,7 +7,7 @@ const createTiles = () => {
     const letter = String.fromCharCode(97 + i);
     tiles.push(
       <Tile
-        key={letter}
+        key={"Tile_" + letter}
         id={letter}
         color={'purple'}
       >

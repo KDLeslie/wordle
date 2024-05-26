@@ -4,9 +4,7 @@ import "../styles/MenuBar.css";
 
 const MenuBar = ({ tries, ratio, checkingGuess, profile,
   handleGuess, handleOpenAddTriesDialog, handleLogIn, handleLogOut }) => {
-  const handleClick = () => {
-    handleGuess();
-  };
+  const loggedOut = profile === null;
 
   const buttonStyles = {
     fontSize: 'calc(5px + 0.5vw)',
@@ -25,16 +23,16 @@ const MenuBar = ({ tries, ratio, checkingGuess, profile,
       <div className="buttons">
         <Tooltip
           TransitionComponent={Zoom} 
-          title={profile == null ? "Log In" : "Log Out"}
+          title={loggedOut ? "Log In" : "Log Out"}
         >
           <Button
             size="small"
             color='secondary'
-            onClick={profile == null ? handleLogIn : handleLogOut}
-            variant={profile == null ? "outlined" : "contained"}
-            style={{...buttonStyles, maxWidth: null, border: (profile == null ? '2px solid' : null)}}
+            onClick={loggedOut ? handleLogIn : handleLogOut}
+            variant={loggedOut ? "outlined" : "contained"}
+            style={{...buttonStyles, maxWidth: null, border: loggedOut ? '2px solid' : null}}
           >
-            {profile == null ? "Log In" : profile.email}
+            {loggedOut ? "Log In" : profile.email}
           </Button>
         </Tooltip>
         <Tooltip
@@ -60,7 +58,7 @@ const MenuBar = ({ tries, ratio, checkingGuess, profile,
             size="small"
             disabled={tries === 0 || checkingGuess}
             color='success'
-            onClick={handleClick}
+            onClick={handleGuess}
             variant="contained"
             style={buttonStyles}
           >

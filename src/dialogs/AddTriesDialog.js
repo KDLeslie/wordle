@@ -4,19 +4,15 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContentText from '@mui/material/DialogContentText';
 
 const AddTriesDialog = ({ open, handleAddTries, handleClose }) => {
-  const close = () => {
-    handleClose();
-  };
-
   const addTries = () => {
     handleAddTries();
-    close();
+    handleClose();
   };
 
   return (
     <Dialog
       open={open}
-      onClose={close}
+      onClose={handleClose}
       disableScrollLock={true}
     >
       <DialogTitle id="alert-dialog-title" textAlign="center">
@@ -30,8 +26,12 @@ const AddTriesDialog = ({ open, handleAddTries, handleClose }) => {
         </DialogContentText>
       </DialogContent>
       <DialogActions style={{ justifyContent: "center" }}>
-        <Button onClick={close} color='secondary'>Cancel</Button>
-        <Button onClick={addTries} color='primary'>Add Tries</Button>
+        <Button onClick={handleClose} color='secondary'>
+          Cancel
+        </Button>
+        <Button onClick={addTries} color='primary'>
+          Add Tries
+        </Button>
       </DialogActions>
     </Dialog>
   );

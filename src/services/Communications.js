@@ -1,9 +1,9 @@
-export const getProfileInfo = async (access_token, resultHandler) => {
-  let getAPI = `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${access_token}`;
+export const getProfileInfo = async (accessToken, resultHandler) => {
+  let getAPI = `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`;
   const response = await fetch(getAPI, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${access_token}`,
+      Authorization: `Bearer ${accessToken}`,
       Accept: 'application/json'
     }
   });

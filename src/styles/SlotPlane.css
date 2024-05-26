@@ -3,14 +3,13 @@
     max-height: 200px;
     width: 100%;
     display: flex;
+    font-family: Oxygen;
   }
   
   .slot {
     width: 100%;
-    font-size: 100px;
     text-align: center;
     border-style: solid;
-    font-family: Oxygen;
     border-color: black;
     color: black;
     border-radius: 5px;

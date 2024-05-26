@@ -28,6 +28,8 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
   const currentGuess = guessHistory[guessCount].slice();
   const currentColours = colourHistory[guessCount].slice();
 
+  const loggedOut = profile === null;
+
   useEffect(() => {
     const resetGame = () => {
       setGuessHistory(Array(1).fill(Array(5).fill('_')));
@@ -45,13 +47,11 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
         .catch((error) => enqueueSnackbar(error.message + " Please refresh the page", {variant: "error"}));
       }).catch((error) => enqueueSnackbar(error.message + " Please refresh the page", {variant: "error"}))
     };
-    // reset the game if the user logs in/out during 
-    // the game
+    // reset the game if the user logs in/out during the game
     if (!startGameDialogOpen && !endGameDialogOpen) {
       resetGame(); 
     } else {
-      // Note: currently gets called one extra time than 
-      // needed
+      // Note: currently gets called one extra time than needed
       getRatio(profile?.email, (result) => setRatio(result));
     }
   }, [profile, startGameDialogOpen, endGameDialogOpen, enqueueSnackbar]);
@@ -116,7 +116,7 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
 
   const handleGetAnswer = (resultHandler) => {
     getAnswer(sessionToken, profile?.email, resultHandler)
-    .catch((error) => enqueueSnackbar(error.message + " Please refresh the page", {variant: "error"}));
+      .catch((error) => enqueueSnackbar(error.message + " Please refresh the page", {variant: "error"}));
   };
 
   const handleAddTries = () => {
@@ -129,14 +129,12 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
     validateGuess(currentGuess, (result) => {
       if (!result) {
         enqueueSnackbar('Not a valid Wordle word!', {variant: 'warning'});
-        // setCheckingGuess(false);
         return;
       };
       checkGuess(currentGuess, sessionToken, profile?.email, handleGuessResult)
-      .catch((error) => enqueueSnackbar(error.message + " Please try again later", {variant: "error"}));
-      // setCheckingGuess(false);
+        .catch((error) => enqueueSnackbar(error.message + " Please try again later", {variant: "error"}));
     }).catch((error) => enqueueSnackbar(error.message + " Please try again later", {variant: "error"}))
-      .finally(() => setCheckingGuess(false));
+        .finally(() => setCheckingGuess(false));
   };
 
   const handleGuessResult = (colours) => {
@@ -163,7 +161,7 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
     <>
       <StartGameDialog
         open={startGameDialogOpen}
-        profile={profile}
+        loggedOut={loggedOut}
         handleClose={handleStartGameDialogClose}
         handleLogIn={handleLogIn}
         handleLogOut={handleLogOut}
@@ -171,7 +169,7 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
       <EndGameDialog
         open={endGameDialogOpen}
         didWin={won}
-        profile={profile}
+        loggedOut={loggedOut}
         handleGetAnswer={handleGetAnswer}
         handleClose={handleEndGameDialogClose}
         handleLogIn={handleLogIn}
@@ -182,31 +180,27 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
         handleAddTries={handleAddTries}
         handleClose={handleAddTriesDialogClose}
       />
-        <div style={{
-
-        }}>
-          <MenuBar
-            tries={tries}
-            ratio={ratio}
-            checkingGuess={checkingGuess}
-            profile={profile}
-            handleGuess={handleGuess}
-            handleOpenAddTriesDialog={handleOpenAddTriesDialog}
-            handleLogIn={handleLogIn}
-            handleLogOut={handleLogOut}
-          />
-          <SlotPlane
-          currentColours={currentColours}
-          currentGuess={currentGuess}
-          setLetter={setLetter}
-          />
-          <TilePlane />
-          <SnapshotPlane
-            guessHistory={guessHistory}
-            colourHistory={colourHistory}
-            guessCount={guessCount}
-          />
-        </div>
+      <MenuBar
+        tries={tries}
+        ratio={ratio}
+        checkingGuess={checkingGuess}
+        profile={profile}
+        handleGuess={handleGuess}
+        handleOpenAddTriesDialog={handleOpenAddTriesDialog}
+        handleLogIn={handleLogIn}
+        handleLogOut={handleLogOut}
+      />
+      <SlotPlane
+        currentColours={currentColours}
+        currentGuess={currentGuess}
+        setLetter={setLetter}
+      />
+      <TilePlane />
+      <SnapshotPlane
+        guessHistory={guessHistory}
+        colourHistory={colourHistory}
+        guessCount={guessCount}
+      />
     </>
   );
 };

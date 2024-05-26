@@ -6,7 +6,7 @@ const createSnapshots = (guessHistory, colourHistory, guessCount) => {
   for (let i = 0; i < guessCount; i++) {
     snapshots.push(
       <Snapshot
-        key={'h' + i}
+        key={'Snapshot_' + i}
         guess={guessHistory[i]}
         colours={colourHistory[i]}
       />
@@ -24,12 +24,9 @@ const Snapshot = ({ guess, colours }) => {
 };
 
 const createSnapshotSlots = (colours, word) => {
-  if (colours === undefined || word === undefined) {
-    return;
-  }
   return colours.map((colour, index) => (
     <SnapshotSlot
-      key={index}
+      key={"SnapshotSlot_" + index}
       colour={colour}
       index={index}
       word={word}
