@@ -71,6 +71,27 @@ export const setSession = async (sessionToken, email) => {
   }
 };
 
+export const removeAllSessions = async (email) => {
+  let getAPI = '/api/RemoveAllSessions';
+  if (process.env.NODE_ENV !== 'production') {
+    getAPI = 'http://localhost:7022' + getAPI;
+  }
+  const response = await fetch(getAPI, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include',
+    body: JSON.stringify({email}),
+    keepalive: true
+  });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(response.statusText + ": " + text);
+  }
+};
+
 export const validateGuess = async (guess, resultHandler) => {
   let getAPI = '/api/ValidateGuess';
   if (process.env.NODE_ENV !== 'production') {

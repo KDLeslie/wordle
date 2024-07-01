@@ -39,7 +39,7 @@ const App = () => {
       getProfileInfo(user.access_token, setProfile).catch((error) => {
         enqueueSnackbar(error.message + " Please try again later", {variant: "error"})
       });
-    }
+    };
 
     // If the user doesn't have an identification cookie,
     // create one and give it to them
@@ -47,7 +47,7 @@ const App = () => {
       getGUID((guid) => setCookie(cookieKey, guid, 99999)).catch((error) => {
         enqueueSnackbar(error.message + " Please try again later", {variant: "error"})
       });
-    }
+    };
   }, [user, enqueueSnackbar]);
 
   const handleLogIn = useGoogleLogin({

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { checkGuess, getAnswer, getGUID, getRatio, incrementDenominator, incrementNumerator, 
-  setSession, validateGuess } from './services/Communications';
+import { checkGuess, removeAllSessions, getAnswer, getGUID, getRatio, incrementDenominator,
+  incrementNumerator, setSession, validateGuess } from './services/Communications';
 import StartGameDialog from './dialogs/StartGameDialog';
 import EndGameDialog from './dialogs/EndGameDialog';
 import { useSnackbar } from 'notistack';
@@ -9,6 +9,24 @@ import MenuBar from './components/MenuBar';
 import SlotPlane from './components/SlotPlane';
 import TilePlane from './components/TilePlane';
 import SnapshotPlane from './components/SnapshotPlane';
+
+const CleanupHandler = ({ email }) => {
+  const [emails, setEmails] = useState([]);
+  useEffect(() => {
+    const removeSessions = (event) => {
+      removeAllSessions(email)
+    };
+
+    if(!emails.includes(email)) {
+      window.addEventListener('beforeunload', removeSessions);
+      const newEmails = emails.slice();
+      newEmails.push(email);
+      setEmails(newEmails);
+    }
+  }, [email, emails]);
+
+  return null;
+};
 
 const Game = ({ profile, handleLogIn, handleLogOut }) => {
   const [startGameDialogOpen, setStartGameDialogOpen] = useState(true);
@@ -200,6 +218,9 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
         guessHistory={guessHistory}
         colourHistory={colourHistory}
         guessCount={guessCount}
+      />
+      <CleanupHandler
+        email={profile?.email}
       />
     </>
   );
