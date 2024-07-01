@@ -1,6 +1,6 @@
 export const getProfileInfo = async (accessToken, resultHandler) => {
-  let getAPI = `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`;
-  const response = await fetch(getAPI, {
+  let apiUrl = `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`;
+  const response = await fetch(apiUrl, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -16,11 +16,11 @@ export const getProfileInfo = async (accessToken, resultHandler) => {
 };
 
 export const getGoogleClientID = async (resultHandler) => {
-  let getAPI = '/api/GetGoogleClientID';
+  let apiUrl = '/api/GetGoogleClientID';
   if (process.env.NODE_ENV !== 'production') {
-    getAPI = 'http://localhost:7022' + getAPI;
+    apiUrl = 'http://localhost:7022' + apiUrl;
   }
-  const response = await fetch(getAPI, {
+  const response = await fetch(apiUrl, {
     method: 'GET',
     headers: {
       'Accept': 'application/json, text/plain, */*',
@@ -36,11 +36,11 @@ export const getGoogleClientID = async (resultHandler) => {
 };
 
 export const getGUID = async (resultHandler) => {
-  let getAPI = '/api/GetGUID';
+  let apiUrl = '/api/GetGUID';
   if (process.env.NODE_ENV !== 'production') {
-    getAPI = 'http://localhost:7022' + getAPI;
+    apiUrl = 'http://localhost:7022' + apiUrl;
   }
-  const response = await fetch(getAPI, {
+  const response = await fetch(apiUrl, {
     method: 'GET',
     headers: {
       'Accept': 'application/json, text/plain, */*',
@@ -52,11 +52,11 @@ export const getGUID = async (resultHandler) => {
 };
 
 export const setSession = async (sessionToken, email) => {
-  let getAPI = '/api/SetSession';
+  let apiUrl = '/api/SetSession';
   if (process.env.NODE_ENV !== 'production') {
-    getAPI = 'http://localhost:7022' + getAPI;
+    apiUrl = 'http://localhost:7022' + apiUrl;
   }
-  const response = await fetch(getAPI, {
+  const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {
       'Accept': 'application/json, text/plain, */*',
@@ -72,11 +72,11 @@ export const setSession = async (sessionToken, email) => {
 };
 
 export const removeAllSessions = async (email) => {
-  let getAPI = '/api/RemoveAllSessions';
+  let apiUrl = '/api/RemoveAllSessions';
   if (process.env.NODE_ENV !== 'production') {
-    getAPI = 'http://localhost:7022' + getAPI;
+    apiUrl = 'http://localhost:7022' + apiUrl;
   }
-  const response = await fetch(getAPI, {
+  const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {
       'Accept': 'application/json, text/plain, */*',
@@ -93,11 +93,11 @@ export const removeAllSessions = async (email) => {
 };
 
 export const validateGuess = async (guess, resultHandler) => {
-  let getAPI = '/api/ValidateGuess';
+  let apiUrl = '/api/ValidateGuess';
   if (process.env.NODE_ENV !== 'production') {
-    getAPI = 'http://localhost:7022' + getAPI;
+    apiUrl = 'http://localhost:7022' + apiUrl;
   }
-  const response = await fetch(getAPI, {
+  const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {
       'Accept': 'application/json, text/plain, */*',
@@ -110,11 +110,11 @@ export const validateGuess = async (guess, resultHandler) => {
 };
 
 export const checkGuess = async (guess, sessionToken, email, resultHandler) => {
-  let getAPI = '/api/CheckGuess';
+  let apiUrl = '/api/CheckGuess';
   if (process.env.NODE_ENV !== 'production') {
-    getAPI = 'http://localhost:7022' + getAPI;
+    apiUrl = 'http://localhost:7022' + apiUrl;
   }
-  const response = await fetch(getAPI, {
+  const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {
       'Accept': 'application/json, text/plain, */*',
@@ -132,11 +132,11 @@ export const checkGuess = async (guess, sessionToken, email, resultHandler) => {
 };
 
 export const getAnswer = async (sessionToken, email, resultHandler) => {
-  let getAPI = '/api/GetAnswer';
+  let apiUrl = '/api/GetAnswer';
   if (process.env.NODE_ENV !== 'production') {
-    getAPI = 'http://localhost:7022' + getAPI;
+    apiUrl = 'http://localhost:7022' + apiUrl;
   }
-  const response = await fetch(getAPI, {
+  const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {
       'Accept': 'application/json, text/plain, */*',
@@ -154,11 +154,11 @@ export const getAnswer = async (sessionToken, email, resultHandler) => {
 };
 
 export const getRatio = async (email, resultHandler) => {
-  let getAPI = '/api/GetRatio';
+  let apiUrl = '/api/GetRatio';
   if (process.env.NODE_ENV !== 'production') {
-    getAPI = 'http://localhost:7022' + getAPI;
+    apiUrl = 'http://localhost:7022' + apiUrl;
   }
-  const response = await fetch(getAPI, {
+  const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {
       'Accept': 'application/json, text/plain, */*',
@@ -172,11 +172,11 @@ export const getRatio = async (email, resultHandler) => {
 };
 
 export const incrementNumerator = async (email, resultHandler) => {
-  let getAPI = '/api/IncrementNumerator';
+  let apiUrl = '/api/IncrementNumerator';
   if (process.env.NODE_ENV !== 'production') {
-    getAPI = 'http://localhost:7022' + getAPI;
+    apiUrl = 'http://localhost:7022' + apiUrl;
   }
-  const response = await fetch(getAPI, {
+  const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {
       'Accept': 'application/json, text/plain, */*',
@@ -194,11 +194,11 @@ export const incrementNumerator = async (email, resultHandler) => {
 };
 
 export const incrementDenominator = async (email, resultHandler) => {
-  let getAPI = '/api/IncrementDenominator';
+  let apiUrl = '/api/IncrementDenominator';
   if (process.env.NODE_ENV !== 'production') {
-    getAPI = 'http://localhost:7022' + getAPI;
+    apiUrl = 'http://localhost:7022' + apiUrl;
   }
-  const response = await fetch(getAPI, {
+  const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {
       'Accept': 'application/json, text/plain, */*',
