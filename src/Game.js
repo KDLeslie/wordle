@@ -18,7 +18,7 @@ const CleanupHandler = ({ email }) => {
     };
 
     if(!emails.includes(email)) {
-      window.addEventListener('beforeunload', removeSessions);
+      window.addEventListener('unload', removeSessions);
       const newEmails = emails.slice();
       newEmails.push(email);
       setEmails(newEmails);
