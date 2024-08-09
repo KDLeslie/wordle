@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { checkGuess, removeAllSessions, getAnswer, getGUID, getRatio, incrementDenominator,
+import { checkGuess, removeSessions, getAnswer, getGUID, getRatio, incrementDenominator,
   incrementNumerator, setSession, validateGuess } from './services/Communications';
 import StartGameDialog from './dialogs/StartGameDialog';
 import EndGameDialog from './dialogs/EndGameDialog';
@@ -10,20 +10,25 @@ import SlotPlane from './components/SlotPlane';
 import TilePlane from './components/TilePlane';
 import SnapshotPlane from './components/SnapshotPlane';
 
-const CleanupHandler = ({ email }) => {
-  const [emails, setEmails] = useState([]);
+const CleanupHandler = ({ email, sessionToken }) => {
+  const [sessions, setSessions] = useState({});
   useEffect(() => {
-    const removeSessions = (event) => {
-      removeAllSessions(email)
+    if (!(sessionToken in sessions) && sessionToken) {
+      // Session token is unique so use that one as the key
+      const newSessions = {...sessions, [sessionToken]:email};
+      setSessions(newSessions);
     };
 
-    if(!emails.includes(email)) {
-      window.addEventListener('unload', removeSessions);
-      const newEmails = emails.slice();
-      newEmails.push(email);
-      setEmails(newEmails);
-    }
-  }, [email, emails]);
+    const handleUnload = () => {
+      removeSessions(sessions)
+    };
+
+    window.addEventListener('unload', handleUnload);
+
+    return () => {
+      window.removeEventListener('unload', handleUnload);
+    };
+  }, [email, sessionToken, sessions, setSessions]);
 
   return null;
 };
@@ -221,6 +226,7 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
       />
       <CleanupHandler
         email={profile?.email}
+        sessionToken={sessionToken}
       />
     </>
   );

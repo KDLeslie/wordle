@@ -71,8 +71,8 @@ export const setSession = async (sessionToken, email) => {
   }
 };
 
-export const removeAllSessions = async (email) => {
-  let apiUrl = '/api/RemoveAllSessions';
+export const removeSessions = async (sessions) => {
+  let apiUrl = '/api/RemoveSessions';
   if (process.env.NODE_ENV !== 'production') {
     apiUrl = 'http://localhost:7022' + apiUrl;
   }
@@ -83,7 +83,8 @@ export const removeAllSessions = async (email) => {
       'Content-Type': 'application/json'
     },
     credentials: 'include',
-    body: JSON.stringify({email}),
+    body: JSON.stringify({sessions: sessions}, 
+      (key, value) => value === undefined ? null : value),
     keepalive: true
   });
   if (!response.ok) {
