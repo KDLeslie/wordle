@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import Confetti from 'react-confetti';
+import { useWindowSize } from 'react-use';
 import { checkGuess, removeSessions, getAnswer, getGUID, getRatio, incrementDenominator,
   incrementNumerator, setSession, validateGuess } from './services/Communications';
 import StartGameDialog from './dialogs/StartGameDialog';
@@ -39,7 +41,7 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
   const [addTriesDialogOpen, setAddTriesDialogOpen] = useState(false);
   const [guessHistory, setGuessHistory] = useState(Array(1).fill(Array(5).fill('_')));
   const [colourHistory, setColourHistory] = useState(Array(1).fill(Array(5).fill('grey')));
-  const [letterColorMappings, setLetterColorMappings] = useState(Array.from({ length: 5 }, () => ({})))
+  const [letterColorMappings, setLetterColorMappings] = useState(Array.from({ length: 5 }, () => ({})));
   const [tries, setTries] = useState(6);
   const [won, setWon] = useState(false);
   const [sessionToken, setSessionToken] = useState("");
@@ -47,7 +49,8 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
   const [safeMode, setSafeMode] = useState(false);
   const [checkingGuess, setCheckingGuess] = useState(false);
   const [guessCount, setGuessCount] = useState(0);
-  const { enqueueSnackbar } = useSnackbar()
+  const { width, height } = useWindowSize();
+  const { enqueueSnackbar } = useSnackbar();
 
   const currentGuess = guessHistory[guessCount].slice();
   const currentColours = [];
@@ -255,6 +258,10 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
         email={profile?.email}
         sessionToken={sessionToken}
       />
+      {won && <Confetti
+        width={width}
+        height={height}
+      />}
     </>
   );
 };
