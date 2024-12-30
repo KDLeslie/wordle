@@ -39,6 +39,7 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
   const [addTriesDialogOpen, setAddTriesDialogOpen] = useState(false);
   const [guessHistory, setGuessHistory] = useState(Array(1).fill(Array(5).fill('_')));
   const [colourHistory, setColourHistory] = useState(Array(1).fill(Array(5).fill('grey')));
+  const [letterColorMappings, setLetterColorMappings] = useState(Array.from({ length: 5 }, () => ({})))
   const [tries, setTries] = useState(6);
   const [won, setWon] = useState(false);
   const [sessionToken, setSessionToken] = useState("");
@@ -49,7 +50,17 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
   const { enqueueSnackbar } = useSnackbar()
 
   const currentGuess = guessHistory[guessCount].slice();
-  const currentColours = colourHistory[guessCount].slice();
+  const currentColours = [];
+
+  for (let i = 0; i < 5; i++) {
+    let letter = currentGuess[i];
+    let mapping = letterColorMappings[i];
+    if (letter in mapping) {
+      currentColours.push(mapping[letter]);
+    } else {
+      currentColours.push('grey');
+    }
+  }
 
   const loggedOut = profile === null;
 
@@ -57,6 +68,7 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
     const resetGame = () => {
       setGuessHistory(Array(1).fill(Array(5).fill('_')));
       setColourHistory(Array(1).fill(Array(5).fill('grey')));
+      setLetterColorMappings(Array.from({ length: 5 }, () => ({})));
       setTries(6);
       setGuessCount(0);
       setWon(false);
@@ -92,6 +104,20 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
     // does not
     const newHist = [...guessHistory.slice(), word];
     setGuessHistory(newHist);
+  }
+
+  const updateColorMappings = (colors, guess) => {
+    const mappings = letterColorMappings.slice();
+    for (let i = 0; i < 5; i++) {
+      let guessedLetter = guess[i];
+      let returnedColor = colors[i];
+      let mapping = mappings[i];
+      // update mapping in priority of green -> yellow -> grey
+      if (!(guessedLetter in mapping) || ((returnedColor === 'yellow' && mapping[guessedLetter] === 'grey') || returnedColor === 'green')) {
+        mapping[guessedLetter] = returnedColor;
+      }
+    }
+    setLetterColorMappings(mappings);
   }
 
   const setWord = (word) => {
@@ -178,6 +204,7 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
     setGuessCount(guessCount + 1);
     addColoursToHistory(colours);
     addGuessToHistory(currentGuess);
+    updateColorMappings(colours, currentGuess)
   };
 
   return (
