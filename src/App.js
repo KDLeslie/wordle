@@ -41,7 +41,7 @@ const App = () => {
       });
     };
 
-    // If the user doesn't have an identification cookie,
+    // if the user doesn't have an identification cookie,
     // create one and give it to them
     if (!getCookie(cookieKey)) {
       getGUID((guid) => setCookie(cookieKey, guid, 99999)).catch((error) => {

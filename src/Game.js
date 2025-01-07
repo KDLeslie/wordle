@@ -16,7 +16,7 @@ const CleanupHandler = ({ email, sessionToken }) => {
   const [sessions, setSessions] = useState({});
   useEffect(() => {
     if (!(sessionToken in sessions) && sessionToken) {
-      // Session token is unique so use that one as the key
+      // session token is unique so use that one as the key
       const newSessions = {...sessions, [sessionToken]:email};
       setSessions(newSessions);
     };
@@ -89,7 +89,7 @@ const Game = ({ profile, handleLogIn, handleLogOut }) => {
     if (!startGameDialogOpen && !endGameDialogOpen) {
       resetGame(); 
     } else {
-      // Note: currently gets called one extra time than needed
+      // note: currently gets called one extra time than needed
       getRatio(profile?.email, (result) => setRatio(result));
     }
   }, [profile, startGameDialogOpen, endGameDialogOpen, enqueueSnackbar]);

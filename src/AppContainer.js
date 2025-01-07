@@ -7,7 +7,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import App from './App';
 import { SnackbarProvider } from 'notistack';
 
-// Check whether user is on mobile or desktop
+// check whether user is on mobile or desktop
 const isTouchDevice = 'ontouchstart' in window || navigator.msMaxTouchPoints;
 const backend = isTouchDevice ? TouchBackend : HTML5Backend;
 

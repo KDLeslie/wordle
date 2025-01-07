@@ -61,13 +61,13 @@
     .tries-left-text,
     .words-guessed-text {
       width: 100%;
-      order: 1; /* Keep Tries Left on top */
+      order: 1; /* keep text on top */
       text-align: center;
     }
   
     .buttons {
       width: 100%;
-      order: 2; /* Move buttons underneath */
+      order: 2; /* move buttons underneath */
       justify-content: center;
     }
   }
